@@ -11,7 +11,8 @@
 
       <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
         <div class="sm:flex sm:px-4 items-start">
-          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
+          <div
+            class="movie-poster relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
@@ -34,7 +35,7 @@
             </div>
           </div>
 
-          <div class="space-y-4 px-4 sm:px-8 pb-6 mt-[-136px] sm:mt-6">
+          <div class="movie-info space-y-4 px-4 sm:px-8 pb-6 mt-[-136px] sm:mt-6">
             <div class="space-y-2">
               <h1 class="text-text-primary text-3xl sm:text-5xl font-black">
                 {{ movie.name }}
@@ -55,7 +56,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -118,7 +119,13 @@ onMounted(async () => {
 
 watch(movieId, async (newId) => {
   if (newId !== null) {
-    await fetchMovieById(newId)
+    if (document.startViewTransition) {
+      document.startViewTransition(async () => {
+        await fetchMovieById(newId)
+      })
+    } else {
+      await fetchMovieById(newId)
+    }
   }
 })
 
@@ -163,5 +170,23 @@ const moviesInGenre = computed(() => {
     background: linear-gradient(#0a0a0a 20%, #6366f130 100%);
     z-index: -5;
   }
+}
+</style>
+
+<style>
+/* View Transitions */
+.movie-poster {
+  view-transition-name: movie-poster;
+}
+
+.movie-info {
+  view-transition-name: movie-info;
+}
+
+::view-transition-old(movie-poster),
+::view-transition-new(movie-poster),
+::view-transition-old(movie-info),
+::view-transition-new(movie-info) {
+  animation-duration: 200ms;
 }
 </style>
