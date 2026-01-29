@@ -31,6 +31,18 @@ export interface Show {
   updated?: number
 }
 
+// Shape of a season from the TVMaze API
+export interface Season {
+  id: number
+  number: number
+  name?: string
+  episodeOrder?: number
+  premiereDate?: string
+  endDate?: string
+  image?: { medium: string; original: string }
+  summary?: string
+}
+
 // For tracking when we last synced data
 export interface SyncMeta {
   key: string

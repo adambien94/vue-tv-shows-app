@@ -55,7 +55,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -83,8 +83,54 @@
         <p class="text-text-secondary mt-2">Try going back and selecting a movie again.</p>
       </div>
 
-      <div>
-        <GenresList v-if="activeGenre && movie" genreText="Other in " :genre="activeGenre" :movies="moviesInGenre" />
+      <div v-if="movie" class="space-y-8">
+        <!-- Seasons List -->
+        <HorizontalList v-if="seasons.length > 0">
+          <template #header>
+            <h2>{{ seasons.length }} {{ seasons.length === 1 ? 'Season' : 'Seasons' }}</h2>
+          </template>
+
+          <template #items>
+            <div v-for="season in seasons" :key="season.id" class="season-card">
+              <div
+                class="relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 rounded-lg lg:rounded-2xl overflow-hidden blend-border bg-secondary/40">
+                <img v-if="season.image?.medium || season.image?.original"
+                  :src="season.image?.medium || season.image?.original" :alt="`Season ${season.number}`" loading="lazy"
+                  class="w-full h-full object-cover" />
+                <div v-else
+                  class="w-full h-full bg-gradient-to-br from-accent-primary/20 to-accent-primary/5 flex flex-col items-center justify-center text-text-tertiary">
+                  <span class="text-4xl lg:text-5xl font-black text-accent-primary/60">{{ season.number }}</span>
+                  <span class="mt-1 text-xs lg:text-sm opacity-60">Season</span>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-8">
+                  <span class="text-text-primary font-bold text-sm lg:text-base">Season {{ season.number }}</span>
+                  <span v-if="season.episodeOrder" class="block text-text-secondary text-xs mt-0.5">
+                    {{ season.episodeOrder }} episodes
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+        </HorizontalList>
+
+        <!-- Other Movies in Genre -->
+        <HorizontalList v-if="activeGenre && moviesInGenre.length > 0">
+          <template #header>
+            <RouterLink :to="{ name: 'search', query: { genre: activeGenre } }"
+              class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
+              <h2>Other in {{ activeGenre }}</h2>
+              <span class="text-accent-primary">&#10095;</span>
+            </RouterLink>
+          </template>
+
+          <template #items>
+            <div v-for="m in moviesInGenre" :key="m.id">
+              <MovieCard :id="m.id" :name="m.name" :genre="activeGenre"
+                :img="m.image?.medium || m.image?.original" :rating="m.rating?.average" />
+            </div>
+          </template>
+        </HorizontalList>
       </div>
 
     </div>
@@ -93,14 +139,41 @@
 
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
+import HorizontalList from '@/components/HorizontalList.vue'
+import MovieCard from '@/components/MovieCard.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import GenresList from '@/components/GenresList.vue'
 import { useMovies } from '@/composables/useMovies'
+import { throttledFetch } from '@/services/rateLimiter'
+import { checkOnline } from '@/composables/useNetwork'
+import type { Season } from '@/db'
 
 const route = useRoute()
 const { movies, fetchMovies, fetchMovieById, currentMovie, loading } = useMovies()
 const isExpanded = ref(false)
+const seasons = ref<Season[]>([])
+const seasonsLoading = ref(false)
+
+const fetchSeasons = async (showId: number) => {
+  seasonsLoading.value = true
+  seasons.value = []
+
+  if (!checkOnline()) {
+    seasonsLoading.value = false
+    return
+  }
+
+  try {
+    const response = await throttledFetch(`https://api.tvmaze.com/shows/${showId}/seasons`)
+    if (!response.ok) throw new Error('Failed to fetch seasons')
+    const data: Season[] = await response.json()
+    seasons.value = data.sort((a, b) => a.number - b.number)
+  } catch (err) {
+    console.error('Failed to fetch seasons:', err)
+  } finally {
+    seasonsLoading.value = false
+  }
+}
 
 const movieId = computed(() => {
   const id = Number(route.params.id)
@@ -110,6 +183,7 @@ const movieId = computed(() => {
 onMounted(async () => {
   if (movieId.value !== null) {
     await fetchMovieById(movieId.value)
+    fetchSeasons(movieId.value)
   }
   if (!movies.value.length) {
     fetchMovies()
@@ -125,6 +199,7 @@ watch(movieId, async (newId) => {
     } else {
       await fetchMovieById(newId)
     }
+    fetchSeasons(newId)
   }
 })
 
