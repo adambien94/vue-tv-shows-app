@@ -5,7 +5,7 @@
     <div class="container min-h-[50vh] pt-6 lg:pt-8 lg:px-8">
       <div class="flex justify-between items-center mb-4 px-4 ">
         <div class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
-          <h2>{{ pageTitle }}</h2>
+          <h2>{{ pageTitle }}:</h2>
         </div>
 
         <p class="text-text-tertiary text-sm">
@@ -49,7 +49,7 @@ let debounceTimeout: ReturnType<typeof setTimeout> | null = null
 
 const pageTitle = computed(() => {
   if (searchTerm.value && selectedGenre.value) {
-    return `Search results for '${searchTerm.value}' in ${selectedGenre.value}`
+    return `'${searchTerm.value}' in ${selectedGenre.value}`
   }
   if (searchTerm.value) {
     return `Search results for '${searchTerm.value}'`
