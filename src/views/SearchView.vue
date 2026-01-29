@@ -11,12 +11,17 @@
         </div>
 
         <p class="text-text-tertiary text-sm">
-          {{ filteredMovies.length }} result{{ filteredMovies.length === 1 ? '' : 's' }}
+          <template v-if="searchLoading">Searching...</template>
+          <template v-else>{{ searchResults.length }} result{{ searchResults.length === 1 ? '' : 's' }}</template>
         </p>
       </div>
 
-      <div v-if="filteredMovies.length" class="mt-2">
-        <SearchList :movies="filteredMovies" />
+      <div v-if="searchLoading" class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
+        <p>Searching...</p>
+      </div>
+
+      <div v-else-if="searchResults.length" class="mt-2">
+        <SearchList :movies="searchResults" />
       </div>
 
       <div v-else class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
@@ -27,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import SearchList from '@/components/SearchList.vue'
@@ -38,24 +43,28 @@ const router = useRouter()
 
 const searchTerm = ref((route.query.q as string) || '')
 
-const { movies, fetchMovies } = useMovies()
+const { searchMoviesApi, searchResults, searchLoading } = useMovies()
+
+let debounceTimeout: ReturnType<typeof setTimeout> | null = null
 
 watch(searchTerm, (newTerm) => {
   router.replace({
     name: 'search',
     query: newTerm ? { q: newTerm } : {},
   })
+
+  if (debounceTimeout) {
+    clearTimeout(debounceTimeout)
+  }
+
+  debounceTimeout = setTimeout(() => {
+    searchMoviesApi(newTerm)
+  }, 300)
 })
 
 onMounted(() => {
-  if (!movies.value.length) {
-    fetchMovies()
+  if (searchTerm.value) {
+    searchMoviesApi(searchTerm.value)
   }
-})
-
-const filteredMovies = computed(() => {
-  const term = searchTerm.value.trim().toLowerCase()
-  if (!term) return movies.value.slice(0, 20)
-  return movies.value.filter((movie) => movie.name.toLowerCase().includes(term))
 })
 </script>

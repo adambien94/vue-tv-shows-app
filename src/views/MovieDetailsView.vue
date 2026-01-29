@@ -3,15 +3,29 @@
     <AppHeader />
 
     <div class="container">
-      <div v-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
+      <div v-if="loading" class="px-4 lg:px-8 pt-10 text-center">
+        <p class="text-text-secondary">Loading...</p>
+      </div>
+
+      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
         <div class="sm:flex sm:px-4 items-start">
           <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
 
-            <img loading="eager" :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
+            <img v-if="movie.image?.original || movie.image?.medium" loading="eager"
+              :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
               class="w-full aspect-[2/3] object-cover " />
+            <div v-else
+              class="w-full aspect-[2/3] bg-secondary/60 flex flex-col items-center justify-center text-text-tertiary">
+              <svg class="w-20 h-20 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="M7 4v16M17 4v16M2 9h5M17 9h5M2 14h5M17 14h5" />
+              </svg>
+              <span class="mt-3 text-sm opacity-60">No Image Available</span>
+            </div>
 
             <div class="absolute left-0 w-full bottom-0 h-full sm:hidden"
               style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(10, 10, 10, 1) 75%);">
@@ -77,20 +91,30 @@ import GenresList from '@/components/GenresList.vue'
 import { useMovies } from '@/composables/useMovies'
 
 const route = useRoute()
-const { movies, fetchMovies } = useMovies()
+const { movies, fetchMovies, fetchMovieById, currentMovie, loading } = useMovies()
 const isExpanded = ref(false)
 
-onMounted(() => {
+const movieId = computed(() => {
+  const id = Number(route.params.id)
+  return Number.isNaN(id) ? null : id
+})
+
+onMounted(async () => {
+  if (movieId.value !== null) {
+    await fetchMovieById(movieId.value)
+  }
   if (!movies.value.length) {
     fetchMovies()
   }
 })
 
-const movie = computed(() => {
-  const movieId = Number(route.params.id)
-  if (Number.isNaN(movieId)) return undefined
-  return movies.value.find(({ id }) => id === movieId)
+watch(movieId, async (newId) => {
+  if (newId !== null) {
+    await fetchMovieById(newId)
+  }
 })
+
+const movie = computed(() => currentMovie.value)
 
 watch(movie, (newMovie) => {
   document.title = newMovie ? `${newMovie.name} | TV Shows` : 'TV Shows'

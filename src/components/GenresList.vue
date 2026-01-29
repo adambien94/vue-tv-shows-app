@@ -12,8 +12,8 @@
       class=" overscroll-x-none px-4 lg:-mx-4 flex gap-4 [--fade-length:18px] overflow-x-scroll pb-6 scroll-smooth scrollbar-hide lg:[mask-image:linear-gradient(to_right,transparent,black_var(--fade-length),black_calc(100%-var(--fade-length)),transparent)]"
       @scroll="handleScroll">
       <div v-for="movie in movies" :key="movie.id" ref="cardRefs">
-        <MovieCard :id="movie.id" :name="movie.name" :genre="genre"
-          :img="movie.image?.medium || movie.image?.original || ''" :rating="movie.rating?.average" />
+        <MovieCard :id="movie.id" :name="movie.name" :genre="genre" :img="movie.image?.medium || movie.image?.original"
+          :rating="movie.rating?.average" />
       </div>
     </div>
 

@@ -12,6 +12,9 @@ const router = createRouter({
     { path: '/movie/:id', name: 'movie-details', component: MovieDetailsView },
     { path: '/search', name: 'search', component: SearchView, meta: { title: 'Search' } },
   ],
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
 
 router.afterEach((to) => {
