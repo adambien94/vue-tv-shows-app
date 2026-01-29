@@ -5,7 +5,7 @@
     <div class="container">
       <div v-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
         <div class="sm:flex sm:px-4 items-start">
-          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] blend-border">
+          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
