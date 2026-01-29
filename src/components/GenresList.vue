@@ -1,22 +1,24 @@
 <template>
-  <div class="px-4 lg:px-12 flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
-    <span class="text-accent-primary">&#10095;</span>
+  <div class="px-4 lg:px-12 flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold ">
     <h2>{{ genreText }} {{ genre }}</h2>
+    <span class="text-accent-primary">&#10095;</span>
   </div>
 
-  <div class="mt-4 relative">
-    <ScrollBtn v-if="canScrollLeft" direction="left" @click="arrowScroll('left')" class="hidden lg:block" />
+  <div class="mt-4 relative lg:px-12 group">
+    <ScrollBtn v-if="canScrollLeft" direction="left" @click="arrowScroll('left')"
+      class="hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity duration-300 left-0 absolute top-1/2 -translate-y-[calc(50%+32px)]" />
 
     <div ref="scrollContainer"
-      class="px-4 lg:px-8 flex gap-4 overflow-x-scroll pb-6 scrollbar-tv scrollbar-hide-mobile scroll-smooth"
+      class=" overscroll-x-none px-4 lg:-mx-4 flex gap-4 [--fade-length:18px] overflow-x-scroll pb-6 scroll-smooth scrollbar-hide lg:[mask-image:linear-gradient(to_right,transparent,black_var(--fade-length),black_calc(100%-var(--fade-length)),transparent)]"
       @scroll="handleScroll">
-      <div v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
-        <MovieCard :id="movie.id" :name="movie.name" :genre="genre" :img="movie.image?.medium || movie.image?.original"
-          :rating="movie.rating?.average" />
+      <div v-for="movie in movies" :key="movie.id" ref="cardRefs">
+        <MovieCard :id="movie.id" :name="movie.name" :genre="genre"
+          :img="movie.image?.medium || movie.image?.original || ''" :rating="movie.rating?.average" />
       </div>
     </div>
 
-    <ScrollBtn v-if="canScrollRight" direction="right" @click="arrowScroll('right')" class="hidden lg:block" />
+    <ScrollBtn v-if="canScrollRight" direction="right" @click="arrowScroll('right')"
+      class="hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity duration-300 right-0 absolute top-1/2 -translate-y-[calc(50%+32px)] " />
   </div>
 </template>
 
@@ -33,6 +35,7 @@ defineProps<{
 }>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
+const cardRefs = ref<HTMLElement[]>([])
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
@@ -51,7 +54,7 @@ const handleScroll = () => {
 const arrowScroll = (direction: 'left' | 'right') => {
   if (!scrollContainer.value) return
 
-  const firstCard = scrollContainer.value.querySelector('.flex-shrink-0')
+  const firstCard = cardRefs.value[0]
   if (!firstCard) return
 
   const cardWidth = firstCard.getBoundingClientRect().width

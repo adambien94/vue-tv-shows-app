@@ -2,12 +2,12 @@
   <div class="pb-12">
     <AppHeader v-model="searchTerm" :autofocus="true" />
 
-    <div class="min-h-[50vh] pt-36 lg:pt-28">
-      <div class="flex justify-between items-center mb-4 px-4 lg:px-12">
+    <div class="container min-h-[50vh] pt-6 lg:pt-8 lg:px-8">
+      <div class="flex justify-between items-center mb-4 px-4 ">
         <!-- TODO: move it to component -->
-        <div class=" flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
-          <span class="text-accent-primary">&#10095;</span>
+        <div class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
           <h2>Search results for '{{ searchTerm }}'</h2>
+          <span class="text-accent-primary">&#10095;</span>
         </div>
 
         <p class="text-text-tertiary text-sm">
@@ -17,12 +17,9 @@
 
       <div v-if="filteredMovies.length" class="mt-2">
         <div
-          class="px-4 lg:px-8 grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 place-content-center pb-6">
+          class="px-4 grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 place-content-center pb-6">
           <div v-for="movie in filteredMovies" :key="movie.id">
-            <MovieCard
-              :id="movie.id"
-              :name="movie.name"
-              :genre="movie.genres?.[0]"
+            <MovieCard :id="movie.id" :name="movie.name" :genre="movie.genres?.[0]"
               :img="movie.image?.medium || movie.image?.original || 'https://via.placeholder.com/300x450?text=No+Image'"
               :rating="movie.rating?.average" />
           </div>

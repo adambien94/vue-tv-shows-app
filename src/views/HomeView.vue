@@ -2,7 +2,7 @@
   <div class="homepage-container pb-4">
     <AppHeader />
 
-    <div class="bg-black/30 lg:bg-black/50 pt-32 lg:pt-24">
+    <div class="pt-2 lg:pt-4 container">
       <div class="mt-4" v-for="genre in genres" :key="genre">
         <GenresList :genre="genre" :movies="moviesByGenre[genre] || []" />
       </div>
@@ -37,7 +37,7 @@ const genres = computed(() => Object.keys(moviesByGenre.value))
   left: 0;
   height: 60vh;
   width: 100%;
-  background: linear-gradient(#6366f1, #0a0a0a);
+  background: linear-gradient(#6366f180, #0a0a0a);
   z-index: -1;
 }
 </style>
