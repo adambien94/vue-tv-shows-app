@@ -1,6 +1,6 @@
 <!-- TODO: refactor component -->
 <template>
-  <div class="details-container min-h-screen relative pb-8 lg:pb-0">
+  <div class="details-container min-h-screen relative pb-8 lg:pb-8">
     <AppHeader />
 
     <div class="container">
@@ -9,7 +9,7 @@
       </div>
 
 
-      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-6">
+      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 sm:pb-6">
         <div class="sm:flex sm:px-4 items-start">
           <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
@@ -55,7 +55,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>

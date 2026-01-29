@@ -15,8 +15,10 @@ app.mount('#app')
  * The Service Worker caches the app shell (HTML, CSS, JS)
  * so the app can load even when offline.
  * Data is cached separately in IndexedDB.
+ *
+ * Only register in production - Vite dev server doesn't serve sw.js correctly
  */
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
