@@ -2,9 +2,9 @@
   <header class="bg-primary border-b border-b-white/5 sticky top-0 z-[2] w-full">
     <nav class="container px-4 lg:px-12  py-3 lg:py-4 lg:flex lg:justify-between w-full">
       <div class="flex justify-between items-center">
-        <RouterLink to="/" class="text-text-primary text-3xl lg:text-4xl font-black ">
+        <a href="/" @click="goHome" class="text-text-primary text-3xl lg:text-4xl font-black ">
           <span class="text-accent-primary inline-block rotate-12">TV</span>Shows
-        </RouterLink>
+        </a>
       </div>
 
       <div class="flex gap-4 items-center mt-2">
@@ -80,9 +80,23 @@ watch(
   },
 )
 
+const goHome = (e: MouseEvent) => {
+  if (route.name === 'home') return
+  e.preventDefault()
+  if (document.startViewTransition) {
+    document.startViewTransition(() => router.push('/'))
+  } else {
+    router.push('/')
+  }
+}
+
 const onFocus = () => {
   if (route.name !== 'search') {
-    router.push({ name: 'search' })
+    if (document.startViewTransition) {
+      document.startViewTransition(() => router.push({ name: 'search' }))
+    } else {
+      router.push({ name: 'search' })
+    }
   }
 }
 

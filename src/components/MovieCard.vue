@@ -6,7 +6,7 @@
   }" @click="handleClick">
     <div
       :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', { skeleton: !isLoaded && img }]">
-      <img v-if="img" :src="img" :alt="name" loading="lazy"
+      <img v-if="img" ref="imgRef" :src="img" :alt="name" loading="lazy"
         :class="['w-full h-full object-cover relative', isLoaded ? 'opacity-100' : 'opacity-0']"
         @load="isLoaded = true" />
       <div v-else class="w-full h-full bg-secondary/60 flex flex-col items-center justify-center text-text-tertiary">
@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps<{
@@ -46,7 +46,15 @@ const props = defineProps<{
 }>()
 
 const router = useRouter()
+const imgRef = ref<HTMLImageElement | null>(null)
 const isLoaded = ref(false)
+
+onMounted(() => {
+  // Check if image is already cached
+  if (imgRef.value?.complete && imgRef.value.naturalHeight > 0) {
+    isLoaded.value = true
+  }
+})
 
 const handleClick = (e: MouseEvent) => {
   if (!document.startViewTransition) return
