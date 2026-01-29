@@ -22,8 +22,8 @@
         <SearchList :movies="searchResults" />
       </div>
 
-      <div v-else class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
-        <p>{{ !searchTerm && !selectedGenre && !searchLoading ? '' : 'No results.' }}</p>
+      <div v-else-if="searchTerm || selectedGenre" class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
+        <p>No results found.</p>
       </div>
     </div>
   </div>
@@ -43,7 +43,7 @@ const searchTerm = ref((route.query.q as string) || '')
 const selectedGenre = ref((route.query.genre as string) || '')
 const genreShows = ref<Show[]>([])
 
-const { searchMoviesApi, searchResults, searchLoading, fetchMoviesByGenre } = useMovies()
+const { movies, fetchMovies, searchMoviesApi, searchResults, searchLoading, fetchMoviesByGenre } = useMovies()
 
 let debounceTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -57,7 +57,7 @@ const pageTitle = computed(() => {
   if (selectedGenre.value) {
     return `Shows in ${selectedGenre.value}`
   }
-  return 'Search your TV shows'
+  return 'Popular Shows'
 })
 
 const searchPlaceholder = computed(() => {
@@ -95,8 +95,11 @@ watch(searchTerm, (newTerm) => {
   debounceTimeout = setTimeout(() => {
     if (selectedGenre.value) {
       filterGenreShows(newTerm)
-    } else {
+    } else if (newTerm.trim()) {
       searchMoviesApi(newTerm)
+    } else {
+      // Show limited movies when search is cleared
+      searchResults.value = movies.value.slice(0, 24)
     }
   }, 300)
 })
@@ -118,6 +121,10 @@ onMounted(async () => {
     genreShows.value = shows
   } else if (searchTerm.value) {
     searchMoviesApi(searchTerm.value)
+  } else {
+    // Show limited movies when no search term or genre
+    await fetchMovies()
+    searchResults.value = movies.value.slice(0, 24)
   }
 })
 </script>
