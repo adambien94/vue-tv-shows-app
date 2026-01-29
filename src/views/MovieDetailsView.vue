@@ -9,7 +9,7 @@
       </div>
 
 
-      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
+      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-6">
         <div class="sm:flex sm:px-4 items-start">
           <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
@@ -87,21 +87,17 @@
         <!-- Seasons List -->
         <HorizontalList v-if="seasons.length > 0">
           <template #header>
-            <h2>{{ seasons.length }} {{ seasons.length === 1 ? 'Season' : 'Seasons' }}</h2>
+            <h2 class="text-text-primary">{{ seasons.length }} {{ seasons.length === 1 ? 'Season' : 'Seasons' }}</h2>
           </template>
 
           <template #items>
-            <div v-for="season in seasons" :key="season.id" class="season-card">
+            <div v-for="season in seasons" :key="season.id" class="season-card relative">
               <div
                 class="relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 rounded-lg lg:rounded-2xl overflow-hidden blend-border bg-secondary/40">
                 <img v-if="season.image?.medium || season.image?.original"
                   :src="season.image?.medium || season.image?.original" :alt="`Season ${season.number}`" loading="lazy"
                   class="w-full h-full object-cover" />
-                <div v-else
-                  class="w-full h-full bg-gradient-to-br from-accent-primary/20 to-accent-primary/5 flex flex-col items-center justify-center text-text-tertiary">
-                  <span class="text-4xl lg:text-5xl font-black text-accent-primary/60">{{ season.number }}</span>
-                  <span class="mt-1 text-xs lg:text-sm opacity-60">Season</span>
-                </div>
+                <div v-else class="w-full h-full bg-gradient-to-br from-accent-primary/20 to-accent-primary/5" />
 
                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-8">
                   <span class="text-text-primary font-bold text-sm lg:text-base">Season {{ season.number }}</span>
@@ -109,6 +105,18 @@
                     {{ season.episodeOrder }} episodes
                   </span>
                 </div>
+              </div>
+
+              <!-- Season number overlay (outside overflow-hidden) -->
+              <div class="absolute top-3 left-3 pointer-events-none">
+                <!-- Gradient background -->
+                <div
+                  class="absolute -inset-4 [background:radial-gradient(ellipse_closest-side_at_center,rgba(0,0,0,.4)_0%,rgba(0,0,0,.24)_30%,rgba(0,0,0,.1)_60%,transparent_100%)]" />
+                <!-- Number -->
+                <span
+                  class="relative text-5xl lg:text-6xl font-black text-white/90 [mask-image:linear-gradient(to_bottom,black_60%,transparent)]">
+                  {{ season.number }}
+                </span>
               </div>
             </div>
           </template>
@@ -126,8 +134,8 @@
 
           <template #items>
             <div v-for="m in moviesInGenre" :key="m.id">
-              <MovieCard :id="m.id" :name="m.name" :genre="activeGenre"
-                :img="m.image?.medium || m.image?.original" :rating="m.rating?.average" />
+              <MovieCard :id="m.id" :name="m.name" :genre="activeGenre" :img="m.image?.medium || m.image?.original"
+                :rating="m.rating?.average" />
             </div>
           </template>
         </HorizontalList>
