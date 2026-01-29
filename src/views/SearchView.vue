@@ -1,8 +1,8 @@
 <template>
   <div class="pb-12">
-    <AppHeader v-model="searchTerm" />
+    <AppHeader v-model="searchTerm" :autofocus="true" />
 
-    <div class="min-h-[50vh] pt-5 lg:pt-8">
+    <div class="min-h-[50vh] pt-36 lg:pt-28">
       <div class="flex justify-between items-center mb-4 px-4 lg:px-12">
         <!-- TODO: move it to component -->
         <div class=" flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
@@ -16,40 +16,45 @@
       </div>
 
       <div v-if="filteredMovies.length" class="mt-2">
-        <!-- TODO: move it to component -->
         <div
           class="px-4 lg:px-8 grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 place-content-center pb-6">
           <div v-for="movie in filteredMovies" :key="movie.id">
-            <MovieCard :id="movie.id" :title="movie.title" :img="movie.img" />
+            <MovieCard
+              :id="movie.id"
+              :name="movie.name"
+              :genre="movie.genres?.[0]"
+              :img="movie.image?.medium || movie.image?.original || 'https://via.placeholder.com/300x450?text=No+Image'"
+              :rating="movie.rating?.average" />
           </div>
         </div>
-
-        <!-- <div
-          class="px-4 lg:px-8 flex gap-4 overflow-x-scroll pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div v-for="movie in filteredMovies" :key="movie.id">
-            <MovieCard :id="movie.id" :title="movie.title" :img="movie.img" />
-          </div>
-        </div> -->
       </div>
 
       <div v-else class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
-        <p>No results yet. Try typing a movie title above.</p>
+        <p>No results. Try typing a movie title above.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import MovieCard from '@/components/MovieCard.vue'
-import { movies } from '@/data/movies'
+import { useMovies } from '@/composables/useMovies'
 
 const searchTerm = ref('')
 
+const { movies, fetchMovies } = useMovies()
+
+onMounted(() => {
+  if (!movies.value.length) {
+    fetchMovies()
+  }
+})
+
 const filteredMovies = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
-  if (!term) return movies
-  return movies.filter((movie) => movie.title.toLowerCase().includes(term))
+  if (!term) return movies.value
+  return movies.value.filter((movie) => movie.name.toLowerCase().includes(term))
 })
 </script>

@@ -1,22 +1,16 @@
 <template>
-  <div class="min-h-screen relative details-container">
-    <div
-      class="px-4 lg:px-8 py-4 lg:py-7 fixed backdrop-blur lg:backdrop-none bg-black/20 lg:relative bac lg:bg-inherit rounded-e- w-full border-b border-b-white/5 mb-4">
-      <RouterLink to="/"
-        class="inline-flex font-bold items-center gap-2 text-text-secondary hover:text-text-primary transition-colors">
-        <span aria-hidden="true">←</span>
-        Back
-      </RouterLink>
-    </div>
+  <div class="min-h-screen relative details-container pb-8 lg:pb-0">
+    <AppHeader />
 
-    <div v-if="movie" class="lg:px-8 lg:pt-4 pb-12">
+    <div v-if="movie" class="lg:px-8 pt-28 pb-12">
       <div class="lg:flex">
         <div class="relative lg:rounded-2xl overflow-hidden bg-secondary/40 lg:w-96 z-[-1]">
           <div class="absolute left-0 w-full top-0 h-full lg:hidden"
             style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
           </div>
 
-          <img :src="movie.img" :alt="movie.title" class="w-full aspect-[2/3]  object-cover" />
+          <img :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
+            class="w-full aspect-[2/3] object-cover" />
 
           <div class="absolute left-0 w-full bottom-0 h-full lg:hidden"
             style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(10, 10, 10, 1) 75%);">
@@ -26,11 +20,9 @@
         <div class="space-y-4 px-4 pb-6 mt-[-136px] lg:mt-6 lg:px-6">
           <div class="space-y-2">
             <h1 class="text-text-primary text-3xl lg:text-5xl font-black">
-              {{ movie.title }}
+              {{ movie.name }}
             </h1>
             <div class="flex flex-wrap items-center gap-2 text-text-tertiary">
-              <span v-if="movie.year">{{ movie.year }}</span>
-              <span v-if="movie.year && movie.genres?.length" aria-hidden="true">•</span>
               <span v-if="movie.genres?.length">{{ movie.genres.join(' • ') }}</span>
             </div>
           </div>
@@ -38,17 +30,14 @@
           <div class="flex flex-wrap items-center gap-3">
             <div
               class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
-              <span class="font-semibold">{{ movie.rating?.toFixed(1) ?? '—' }}</span>
+              <span class="font-semibold">{{
+                movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
+                }}</span>
               <span class="text-sm text-accent-primary/90"> / 10</span>
-            </div>
-            <div class="text-text-secondary text-sm" v-if="movie.voteCount">
-              {{ movie.voteCount }} votes
             </div>
           </div>
 
-          <p class="text-text-secondary leading-relaxed max-w-3xl">
-            {{ movie.overview ?? 'No overview yet.' }}
-          </p>
+          <p class="text-text-secondary leading-relaxed max-w-3xl" v-html="movieSummary" />
 
           <div class="pt-2">
             <button class="btn-accent-primary w-full lg:w-64 lg:mt-4">
@@ -64,28 +53,48 @@
       <p class="text-text-secondary mt-2">Try going back and selecting a movie again.</p>
     </div>
 
-    <!-- TODO: Create genre list component -->
-    <div>
-      <GenresList genre="Other in Drama" :movies="movies" />
-    </div>
-
-    <AppFooter />
+    <GenresList v-if="activeGenre" genreText="Other in " :genre="activeGenre" :movies="moviesInGenre" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import AppHeader from '@/components/AppHeader.vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getMovieById } from '@/data/movies'
-import AppFooter from '@/components/AppFooter.vue'
 import GenresList from '@/components/GenresList.vue'
-
-
-import { movies } from '@/data/movies'
-
+import { useMovies } from '@/composables/useMovies'
 
 const route = useRoute()
-const movie = computed(() => getMovieById(String(route.params.id ?? '')))
+const { movies, fetchMovies } = useMovies()
+
+onMounted(() => {
+  if (!movies.value.length) {
+    fetchMovies()
+  }
+})
+
+const movie = computed(() => {
+  const movieId = Number(route.params.id)
+  if (Number.isNaN(movieId)) return undefined
+  return movies.value.find(({ id }) => id === movieId)
+})
+
+const movieSummary = computed(() => {
+  const summary = movie.value?.summary
+  if (!summary) return 'No overview yet.'
+  return summary
+})
+
+const activeGenre = computed(() => {
+  return route.query.genre || ''
+})
+
+const moviesInGenre = computed(() => {
+  if (!activeGenre.value) return []
+  return movies.value.filter(
+    (m) => m.id !== movie.value?.id && m.genres?.includes(activeGenre.value),
+  )?.slice(0, 20)
+})
 </script>
 
 <style scoped>

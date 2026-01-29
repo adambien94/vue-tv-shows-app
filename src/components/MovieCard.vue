@@ -1,20 +1,24 @@
 <template>
-  <RouterLink class="card block" :to="`/movie/${id}`">
+  <RouterLink class="card block" :to="{
+    name: 'movie-details',
+    params: { id },
+    query: genre ? { genre } : undefined,
+  }">
     <div
-      class="relative mx-auto w-32 lg:w-64 h-52 lg:h-96 rounded-lg lg:rounded-2xl overflow-hidden border border-solid border-white/10">
-      <img :src="img" :alt="title" class="w-full h-full object-cover" />
-      <!-- <div class="test p-2 absolute w-full bottom-0 left-0 z-30 bg-black/50 text-center">
-        <h3 class="text-accent-primary text-lg font-bold">
-          8.1
-        </h3>
-      </div> -->
+      class="relative mx-auto w-full min-w-32 lg:min-w-64 lg:max-w-96 h-52 lg:h-96 rounded-lg lg:rounded-2xl overflow-hidden border border-solid border-white/10">
+      <img :src="img" :alt="name" class="w-full h-full object-cover" />
     </div>
 
-    <div class="mt-2 mx-auto w-32 lg:w-64">
+    <div class="mt-2 mx-auto w-full min-w-32 lg:min-w-64 lg:max-w-96">
       <h3 class="text-text-primary font-bold lg:text-xl line-clamp-1">
-        {{ title }}
+        {{ name }}
       </h3>
-      <p class="text-text-secondary text-xs lg:text-sm mt-1">839 votes</p>
+      <div class="flex items-center gap-2 mt-1">
+        <!-- <p v-if="rating !== null && rating !== undefined" class="text-text-secondary text-xs lg:text-sm">
+          ⭐ {{ rating.toFixed(1) }}
+        </p> -->
+        <p class="text-text-secondary text-xs lg:text-sm">839 votes</p>
+      </div>
     </div>
   </RouterLink>
 
@@ -22,9 +26,11 @@
 
 <script setup lang="ts">
 defineProps<{
-  id: string
-  title: string
-  img: string,
+  id: string | number
+  name: string
+  img: string
+  genre?: string
+  rating?: number | null
 }>()
 
 </script>

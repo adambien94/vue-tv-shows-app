@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import App from '../App.vue'
-import HomeView from '../views/GenresView.vue'
+import HomeView from '../views/HomeView.vue'
 import MovieDetailsView from '../views/MovieDetailsView.vue'
 
 describe('App', () => {
