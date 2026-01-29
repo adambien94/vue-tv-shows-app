@@ -18,7 +18,7 @@
             </div>
           </div>
 
-          <div class="space-y-4 px-8 pb-6 mt-[-136px] sm:mt-6">
+          <div class="space-y-4 px-4 sm:px-8 pb-6 mt-[-136px] sm:mt-6">
             <div class="space-y-2">
               <h1 class="text-text-primary text-3xl sm:text-5xl font-black">
                 {{ movie.name }}
@@ -33,7 +33,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
