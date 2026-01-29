@@ -5,8 +5,10 @@
     query: genre ? { genre } : undefined,
   }">
     <div
-      class="relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96  rounded-lg lg:rounded-2xl overflow-hidden border border-solid border-white/10">
-      <img :src="img" :alt="name" loading="lazy" class="w-full h-full object-cover" />
+      :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden border border-solid border-white/10', { skeleton: !isLoaded }]">
+      <img :src="img" :alt="name" loading="lazy"
+        :class="['w-full h-full object-cover relative', isLoaded ? 'opacity-100' : 'opacity-0']"
+        @load="isLoaded = true" />
     </div>
 
     <span class="mt-2 block mx-auto w-full min-w-32 lg:min-w-48 lg:max-w-96">
@@ -23,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 defineProps<{
   id: string | number
   name: string
@@ -31,7 +35,24 @@ defineProps<{
   rating?: number | null
 }>()
 
+const isLoaded = ref(false)
 </script>
 
 
-<style scoped></style>
+<style scoped>
+.skeleton::before {
+  animation: skeleton-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+</style>

@@ -10,7 +10,7 @@
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
 
-            <img :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
+            <img loading="eager" :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
               class="w-full aspect-[2/3] object-cover" />
 
             <div class="absolute left-0 w-full bottom-0 h-full sm:hidden"
@@ -33,7 +33,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>

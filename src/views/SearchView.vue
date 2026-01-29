@@ -27,14 +27,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import SearchList from '@/components/SearchList.vue'
 import { useMovies } from '@/composables/useMovies'
 
-const searchTerm = ref('')
+const route = useRoute()
+const router = useRouter()
+
+const searchTerm = ref((route.query.q as string) || '')
 
 const { movies, fetchMovies } = useMovies()
+
+watch(searchTerm, (newTerm) => {
+  router.replace({
+    name: 'search',
+    query: newTerm ? { q: newTerm } : {},
+  })
+})
 
 onMounted(() => {
   if (!movies.value.length) {
