@@ -27,6 +27,7 @@ import { ref, computed } from 'vue'
 import { db, type Show } from '@/db'
 import { throttledFetch } from '@/services/rateLimiter'
 import { syncShows, useSyncStatus } from '@/services/syncService'
+import { checkOnline } from '@/composables/useNetwork'
 
 export type { Show }
 export type Movie = Show // Alias for backward compatibility
@@ -107,11 +108,20 @@ export function useMovies() {
    * WHY USE API FOR SEARCH?
    * TVMaze's search is fuzzy (handles typos) and searches ALL shows,
    * not just the ~500 we have cached. Results are cached for offline use.
+   *
+   * OFFLINE BEHAVIOR:
+   * When offline, automatically falls back to local search in cached data.
    */
   const searchMoviesApi = async (query: string) => {
     if (!query.trim()) {
       searchResults.value = []
       return []
+    }
+
+    // OFFLINE: Use local search when offline
+    if (!checkOnline()) {
+      console.log('Offline - using local search')
+      return searchMoviesLocal(query)
     }
 
     searchLoading.value = true
@@ -161,13 +171,14 @@ export function useMovies() {
    *
    * LOCAL-FIRST:
    * 1. Check IndexedDB first (might already have it from dashboard)
-   * 2. If not found → fetch from API and cache it
+   * 2. If not found and online → fetch from API and cache it
+   * 3. If not found and offline → return null (show not available)
    */
   const fetchMovieById = async (id: number) => {
     loading.value = true
     currentMovie.value = null
     try {
-      // Step 1: Check local cache first
+      // Step 1: Check local cache first (works offline!)
       const cached = await db.shows.get(id)
       if (cached) {
         currentMovie.value = cached
@@ -175,7 +186,15 @@ export function useMovies() {
         return cached
       }
 
-      // Step 2: Not in cache - fetch from API
+      // Step 2: Not in cache - check if we can fetch
+      if (!checkOnline()) {
+        // Offline and not in cache - can't get it
+        console.log('Offline - show not in cache')
+        loading.value = false
+        return null
+      }
+
+      // Step 3: Online - fetch from API
       const response = await throttledFetch(`${API_URL}/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch TV show details')
@@ -183,12 +202,13 @@ export function useMovies() {
       const data: Show = await response.json()
       currentMovie.value = data
 
-      // Step 3: Cache for future visits
+      // Step 4: Cache for future offline access
       db.shows.put(data).catch(console.error)
 
       return data
     } catch (err) {
-      if (err instanceof Error) {
+      // Don't show alert if we're offline (expected behavior)
+      if (checkOnline() && err instanceof Error) {
         alert(err.message)
       }
       return null

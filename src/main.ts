@@ -8,3 +8,28 @@ const app = createApp(App)
 app.use(router)
 
 app.mount('#app')
+
+/**
+ * Register Service Worker for offline support
+ *
+ * The Service Worker caches the app shell (HTML, CSS, JS)
+ * so the app can load even when offline.
+ * Data is cached separately in IndexedDB.
+ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('Service Worker registered:', registration.scope)
+
+        // Check for updates periodically
+        setInterval(() => {
+          registration.update()
+        }, 60 * 60 * 1000) // Check every hour
+      })
+      .catch((error) => {
+        console.error('Service Worker registration failed:', error)
+      })
+  })
+}

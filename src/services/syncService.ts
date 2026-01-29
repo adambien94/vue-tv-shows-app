@@ -11,6 +11,10 @@
  * 2. On return visits: Use cached data (instant load!)
  * 3. If cache is older than 1 hour: Refresh in background
  *
+ * OFFLINE SUPPORT:
+ * - If offline, skip sync and use cached data
+ * - No error shown when offline (it's expected behavior)
+ *
  * This gives us:
  * - Fast load times (data is already in browser)
  * - Offline support (works without internet)
@@ -20,6 +24,7 @@
 import { ref, readonly } from 'vue'
 import { db, getSyncMeta, setSyncMeta, SYNC_KEYS, type Show } from '@/db'
 import { throttledFetch } from './rateLimiter'
+import { checkOnline } from '@/composables/useNetwork'
 
 const API_BASE = 'https://api.tvmaze.com'
 
@@ -63,6 +68,7 @@ export function useSyncStatus() {
  * Main sync function - call this when the app starts
  *
  * Logic:
+ * - If offline → skip sync, use cached data
  * - If we have fresh cached data → use it, don't fetch
  * - If cache is stale or empty → fetch from API
  */
@@ -70,6 +76,14 @@ export async function syncShows(): Promise<void> {
   // Don't run multiple syncs at once
   if (isSyncing.value) {
     console.log('Sync already in progress')
+    return
+  }
+
+  // OFFLINE CHECK: Skip sync if offline, use cached data
+  if (!checkOnline()) {
+    console.log('Offline - using cached data')
+    syncMessage.value = 'Offline mode'
+    // Don't set error - being offline is normal
     return
   }
 
@@ -97,7 +111,10 @@ export async function syncShows(): Promise<void> {
     syncMessage.value = 'Sync complete'
   } catch (error) {
     console.error('Sync failed:', error)
-    syncError.value = error instanceof Error ? error.message : 'Unknown sync error'
+    // Only show error if we're online (network errors when online = real problem)
+    if (checkOnline()) {
+      syncError.value = error instanceof Error ? error.message : 'Unknown sync error'
+    }
   } finally {
     isSyncing.value = false
   }
@@ -120,6 +137,13 @@ async function fetchDashboardShows(): Promise<void> {
 
   // Fetch page 0, then page 1 (each has ~250 shows)
   for (let page = 0; page < MAX_PAGES; page++) {
+    // Check if we went offline during sync
+    if (!checkOnline()) {
+      console.log('Went offline during sync, stopping')
+      syncMessage.value = 'Sync paused (offline)'
+      break
+    }
+
     syncMessage.value = `Loading page ${page + 1}/${MAX_PAGES}...`
 
     try {
@@ -155,6 +179,12 @@ async function fetchDashboardShows(): Promise<void> {
       // Update progress bar
       syncProgress.value = Math.round(((page + 1) / MAX_PAGES) * 90)
     } catch (error) {
+      // If we're offline now, don't treat it as an error
+      if (!checkOnline()) {
+        console.log('Network error (offline)')
+        syncMessage.value = 'Offline - using cached data'
+        break
+      }
       if (error instanceof Error && error.message.includes('404')) {
         break
       }
@@ -162,12 +192,13 @@ async function fetchDashboardShows(): Promise<void> {
     }
   }
 
-  // Remember when we synced so we don't re-fetch unnecessarily
-  await setSyncMeta(SYNC_KEYS.LAST_FULL_SYNC, Date.now())
-  await setSyncMeta(SYNC_KEYS.TOTAL_SHOWS, totalFetched)
-
-  syncMessage.value = `Loaded ${totalFetched} shows`
-  console.log(`Dashboard sync complete: ${totalFetched} shows`)
+  // Only record sync completion if we actually fetched something
+  if (totalFetched > 0) {
+    await setSyncMeta(SYNC_KEYS.LAST_FULL_SYNC, Date.now())
+    await setSyncMeta(SYNC_KEYS.TOTAL_SHOWS, totalFetched)
+    syncMessage.value = `Loaded ${totalFetched} shows`
+    console.log(`Dashboard sync complete: ${totalFetched} shows`)
+  }
 }
 
 /**
@@ -175,6 +206,10 @@ async function fetchDashboardShows(): Promise<void> {
  * (invalidates cache and re-fetches)
  */
 export async function refreshDashboard(): Promise<void> {
+  if (!checkOnline()) {
+    syncError.value = 'Cannot refresh while offline'
+    return
+  }
   await setSyncMeta(SYNC_KEYS.LAST_FULL_SYNC, 0)
   await syncShows()
 }
