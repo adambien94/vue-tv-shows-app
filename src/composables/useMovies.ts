@@ -267,6 +267,38 @@ export function useMovies() {
     return movies.value.filter((movie) => movie.name.toLowerCase().includes(q))
   }
 
+  /**
+   * Fetch movies by genre from IndexedDB
+   * Uses the multi-entry index on genres for efficient querying
+   */
+  const fetchMoviesByGenre = async (genre: string): Promise<Show[]> => {
+    if (!genre.trim()) {
+      searchResults.value = []
+      return []
+    }
+
+    searchLoading.value = true
+    try {
+      // Use the multi-entry index to efficiently query by genre
+      const shows = await db.shows
+        .where('genres')
+        .equals(genre)
+        .toArray()
+
+      // Sort by rating (best first)
+      shows.sort((a, b) => (b.rating.average ?? 0) - (a.rating.average ?? 0))
+
+      searchResults.value = shows
+      return shows
+    } catch (err) {
+      console.error('Failed to fetch movies by genre:', err)
+      searchResults.value = []
+      return []
+    } finally {
+      searchLoading.value = false
+    }
+  }
+
   return {
     // Data
     movies,
@@ -280,6 +312,7 @@ export function useMovies() {
     searchMovies,
     searchMoviesApi,
     searchMoviesLocal,
+    fetchMoviesByGenre,
 
     // Loading states
     loading,

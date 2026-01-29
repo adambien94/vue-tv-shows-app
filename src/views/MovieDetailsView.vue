@@ -47,7 +47,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -76,7 +76,7 @@
       </div>
 
       <div>
-        <GenresList v-if="activeGenre" genreText="Other in " :genre="activeGenre" :movies="moviesInGenre" />
+        <GenresList v-if="activeGenre && movie" genreText="Other in " :genre="activeGenre" :movies="moviesInGenre" />
       </div>
 
     </div>

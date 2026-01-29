@@ -1,7 +1,10 @@
 <template>
   <div class="px-4 lg:px-12 flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold ">
-    <h2>{{ genreText }} {{ genre }}</h2>
-    <span class="text-accent-primary">&#10095;</span>
+    <RouterLink :to="{ name: 'search', query: { genre } }"
+      class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
+      <h2>{{ genreText }} {{ genre }}</h2>
+      <span class="text-accent-primary">&#10095;</span>
+    </RouterLink>
   </div>
 
   <div class="mt-4 relative lg:px-12 group">
@@ -23,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import MovieCard from '@/components/MovieCard.vue'
 import ScrollBtn from '@/components/ScrollBtn.vue'
 import type { Movie } from '@/composables/useMovies'

@@ -11,7 +11,8 @@
         <div class="flex-1 lg:mt-0 bg-secondary rounded-lg relative">
           <input ref="searchInput" type="text"
             class="w-full h-12 rounded-lg px-4 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
-            placeholder="Search..." :value="localValue" @input="onInput" @focus="onFocus" @keydown.escape="onClear" />
+            :placeholder="props.placeholder || 'Search...'" :value="localValue" @input="onInput" @focus="onFocus"
+            @keydown.escape="onClear" />
           <button v-if="localValue" @click="onClear" type="button"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none"
@@ -34,6 +35,7 @@ import { useRouter, useRoute } from 'vue-router'
 const props = defineProps<{
   modelValue?: string
   autofocus?: boolean
+  placeholder?: string
 }>()
 
 const emit = defineEmits<{
