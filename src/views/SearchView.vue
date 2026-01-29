@@ -25,7 +25,7 @@
       </div>
 
       <div v-else class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
-        <p>No results. Try typing a movie title above.</p>
+        <p>{{ !searchTerm || !searchLoading ? 'Start searching for your favorite TVshows' : 'No results.' }}</p>
       </div>
     </div>
   </div>
