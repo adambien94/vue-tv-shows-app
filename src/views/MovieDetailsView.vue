@@ -33,7 +33,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -66,14 +66,12 @@
       </div>
 
     </div>
-
-
   </div>
 </template>
 
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import GenresList from '@/components/GenresList.vue'
 import { useMovies } from '@/composables/useMovies'
@@ -93,6 +91,10 @@ const movie = computed(() => {
   if (Number.isNaN(movieId)) return undefined
   return movies.value.find(({ id }) => id === movieId)
 })
+
+watch(movie, (newMovie) => {
+  document.title = newMovie ? `${newMovie.name} | TV Shows` : 'TV Shows'
+}, { immediate: true })
 
 const movieSummary = computed(() => {
   const summary = movie.value?.summary
