@@ -14,8 +14,6 @@ export default {
         'text-tertiary': '#8a8a8a',
         'text-muted': '#666666',
         'accent-primary': '#6366f1',
-        'accent-secondary': '#8b5cf6',
-        'accent-hover': '#4f46e5',
         'success': '#10b981',
         'warning': '#f59e0b',
         'error': '#ef4444',

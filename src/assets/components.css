@@ -1,3 +1,5 @@
 @layer components {
-
+  .btn-accent-primary {
+    @apply border border-accent-primary rounded-full text-accent-primary sm:w-auto px-6 py-3;
+  }
 }
