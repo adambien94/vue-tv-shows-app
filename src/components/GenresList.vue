@@ -34,6 +34,7 @@ defineProps<{
   movies: Movie[]
 }>()
 
+
 const scrollContainer = ref<HTMLElement | null>(null)
 const cardRefs = ref<HTMLElement[]>([])
 const canScrollLeft = ref(false)

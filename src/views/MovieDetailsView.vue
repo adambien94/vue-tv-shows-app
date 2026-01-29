@@ -1,26 +1,26 @@
 <template>
-  <div class="details-container  min-h-screen relative pb-8 lg:pb-0">
+  <div class="details-container min-h-screen relative pb-8 lg:pb-0">
     <AppHeader />
 
     <div class="container">
-      <div v-if="movie" class="container lg:px-8 lg:pt-10 pb-12">
-        <div class="lg:flex lg:px-4">
-          <div class="relative lg:rounded-2xl overflow-hidden bg-secondary/40 lg:w-96 z-[-1]">
-            <div class="absolute left-0 w-full top-0 h-full lg:hidden"
+      <div v-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
+        <div class="sm:flex sm:px-4 items-start">
+          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1]">
+            <div class="absolute left-0 w-full top-0 h-full sm:hidden"
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
 
             <img :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
               class="w-full aspect-[2/3] object-cover" />
 
-            <div class="absolute left-0 w-full bottom-0 h-full lg:hidden"
+            <div class="absolute left-0 w-full bottom-0 h-full sm:hidden"
               style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(10, 10, 10, 1) 75%);">
             </div>
           </div>
 
-          <div class="space-y-4 px-4 pb-6 mt-[-136px] lg:mt-6 lg:px-6">
+          <div class="space-y-4 px-4 pb-6 mt-[-136px] sm:mt-6 sm:px-6">
             <div class="space-y-2">
-              <h1 class="text-text-primary text-3xl lg:text-5xl font-black">
+              <h1 class="text-text-primary text-3xl sm:text-5xl font-black">
                 {{ movie.name }}
               </h1>
               <div class="flex flex-wrap items-center gap-2 text-text-tertiary">

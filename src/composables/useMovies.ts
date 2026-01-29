@@ -12,6 +12,7 @@ export type Movie = {
     original: string
   }
   summary?: string
+  premiered?: string
 }
 
 const API_URL = 'https://api.tvmaze.com/shows'

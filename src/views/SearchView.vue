@@ -6,7 +6,7 @@
       <div class="flex justify-between items-center mb-4 px-4 ">
         <!-- TODO: move it to component -->
         <div class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
-          <h2>Search results for '{{ searchTerm }}'</h2>
+          <h2>{{ !!searchTerm ? `Search results for '${searchTerm}'` : 'Search your TV shows' }}</h2>
           <span class="text-accent-primary">&#10095;</span>
         </div>
 
@@ -16,14 +16,7 @@
       </div>
 
       <div v-if="filteredMovies.length" class="mt-2">
-        <div
-          class="px-4 grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4 place-content-center pb-6">
-          <div v-for="movie in filteredMovies" :key="movie.id">
-            <MovieCard :id="movie.id" :name="movie.name" :genre="movie.genres?.[0]"
-              :img="movie.image?.medium || movie.image?.original || 'https://via.placeholder.com/300x450?text=No+Image'"
-              :rating="movie.rating?.average" />
-          </div>
-        </div>
+        <SearchList :movies="filteredMovies" />
       </div>
 
       <div v-else class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
@@ -36,7 +29,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
-import MovieCard from '@/components/MovieCard.vue'
+import SearchList from '@/components/SearchList.vue'
 import { useMovies } from '@/composables/useMovies'
 
 const searchTerm = ref('')
@@ -51,7 +44,7 @@ onMounted(() => {
 
 const filteredMovies = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
-  if (!term) return movies.value
+  if (!term) return movies.value.slice(0, 20)
   return movies.value.filter((movie) => movie.name.toLowerCase().includes(term))
 })
 </script>
