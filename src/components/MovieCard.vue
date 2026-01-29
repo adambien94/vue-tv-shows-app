@@ -1,5 +1,5 @@
 <template>
-  <RouterLink class="card block select-none" :to="{
+  <RouterLink class="card block select-none hover:brightness-[0.7] transition-all duration-300" :to="{
     name: 'movie-details',
     params: { id },
     query: genre ? { genre } : undefined,
@@ -14,19 +14,8 @@
         {{ name }}
       </span>
       <span class="flex items-center gap-2 mt-1">
-        <!-- <p v-if="rating !== null && rating !== undefined" class="text-text-secondary text-xs lg:text-sm">
-          ⭐ {{ rating.toFixed(1) }}
-        </p> -->
-        <!-- <div class="flex flex-wrap items-center gap-3 absolute top-[1px] ">
-          <div class="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-text-primary/80 border border-white/10">
-            <span class="font-semibold">{{
-              rating?.toFixed(1)
-            }}</span>
-            <span class="text-sm text-text-primary/60"> / 10</span>
-          </div>
-        </div> -->
-        <p class="text-text-secondary text-xs lg:text-sm">Rating: <span class="font-semibold">{{ rating?.toFixed(1)
-            }}</span> </p>
+        <span class="text-text-secondary text-xs lg:text-sm">Rating: <span class="font-semibold">{{ rating?.toFixed(1)
+            }}</span> </span>
       </span>
     </span>
   </RouterLink>

@@ -33,12 +33,19 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
 
-            <p class="text-text-secondary leading-relaxed max-w-3xl" v-html="movieSummary" />
+            <div class="max-w-3xl">
+              <p class="text-text-secondary leading-relaxed" :class="{ 'line-clamp-4 lg:line-clamp-none': !isExpanded }"
+                v-html="movieSummary" />
+              <button v-if="movieSummary !== 'No overview yet.'" @click="isExpanded = !isExpanded"
+                class="lg:hidden mt-2 text-accent-primary font-medium text-sm hover:underline">
+                {{ isExpanded ? 'Read Less' : 'Read More' }}
+              </button>
+            </div>
 
             <div class="pt-2">
               <button class="btn-accent-primary w-full lg:w-64 lg:mt-4">
@@ -66,13 +73,14 @@
 
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import GenresList from '@/components/GenresList.vue'
 import { useMovies } from '@/composables/useMovies'
 
 const route = useRoute()
 const { movies, fetchMovies } = useMovies()
+const isExpanded = ref(false)
 
 onMounted(() => {
   if (!movies.value.length) {
