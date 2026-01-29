@@ -11,8 +11,8 @@
       class="px-4 lg:px-8 flex gap-4 overflow-x-scroll pb-6 scrollbar-tv scrollbar-hide-mobile scroll-smooth"
       @scroll="handleScroll">
       <div v-for="movie in movies" :key="movie.id" class="flex-shrink-0">
-        <MovieCard :id="movie.id" :name="movie.name" :genre="genre" :img="movie.image?.medium || movie.image?.original"
-          :rating="movie.rating?.average" />
+        <MovieCard :id="movie.id" :name="movie.name" :genre="genre"
+          :img="movie.image?.medium || movie.image?.original || ''" :rating="movie.rating?.average" />
       </div>
     </div>
 

@@ -10,6 +10,9 @@ const router = createRouter({
     { path: '/movie/:id', name: 'movie-details', component: MovieDetailsView },
     { path: '/search', name: 'search', component: SearchView },
   ],
+  scrollBehavior() {
+    return { top: 0 }
+  },
 })
 
 export default router
