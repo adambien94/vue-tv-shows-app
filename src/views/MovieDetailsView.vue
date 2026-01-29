@@ -1,3 +1,4 @@
+<!-- TODO: refactor component -->
 <template>
   <div class="details-container min-h-screen relative pb-8 lg:pb-0">
     <AppHeader />
@@ -6,6 +7,7 @@
       <div v-if="loading" class="px-4 lg:px-8 pt-10 text-center">
         <p class="text-text-secondary">Loading...</p>
       </div>
+
 
       <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
         <div class="sm:flex sm:px-4 items-start">
@@ -37,8 +39,14 @@
               <h1 class="text-text-primary text-3xl sm:text-5xl font-black">
                 {{ movie.name }}
               </h1>
-              <div class="flex flex-wrap items-center gap-2 text-text-tertiary">
-                <span v-if="movie.genres?.length">{{ movie.genres.join(' • ') }}</span>
+              <div v-if="movie.genres?.length" class="flex flex-wrap items-center gap-x-1 text-text-tertiary">
+                <template v-for="(genre, index) in movie.genres" :key="genre">
+                  <RouterLink :to="{ name: 'search', query: { genre } }"
+                    class="hover:text-accent-primary transition-colors">
+                    {{ genre }}
+                  </RouterLink>
+                  <span v-if="index < movie.genres.length - 1">•</span>
+                </template>
               </div>
             </div>
 
@@ -86,7 +94,7 @@
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import GenresList from '@/components/GenresList.vue'
 import { useMovies } from '@/composables/useMovies'
 
@@ -143,7 +151,7 @@ const moviesInGenre = computed(() => {
 </script>
 
 <style scoped>
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 640px) {
   .details-container:after {
     content: '';
     display: block;
