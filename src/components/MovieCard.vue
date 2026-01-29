@@ -3,7 +3,7 @@
     name: 'movie-details',
     params: { id },
     query: genre ? { genre } : undefined,
-  }">
+  }" @click="handleClick">
     <div
       :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', { skeleton: !isLoaded && img }]">
       <img v-if="img" :src="img" :alt="name" loading="lazy"
@@ -35,8 +35,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-defineProps<{
+const props = defineProps<{
   id: string | number
   name: string
   img?: string
@@ -44,7 +45,21 @@ defineProps<{
   rating?: number | null
 }>()
 
+const router = useRouter()
 const isLoaded = ref(false)
+
+const handleClick = (e: MouseEvent) => {
+  if (!document.startViewTransition) return
+
+  e.preventDefault()
+  document.startViewTransition(() => {
+    router.push({
+      name: 'movie-details',
+      params: { id: props.id },
+      query: props.genre ? { genre: props.genre } : undefined,
+    })
+  })
+}
 </script>
 
 
