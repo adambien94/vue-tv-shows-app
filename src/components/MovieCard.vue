@@ -5,7 +5,7 @@
     query: genre ? { genre } : undefined,
   }">
     <div
-      :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden border border-solid border-white/10', { skeleton: !isLoaded }]">
+      :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', { skeleton: !isLoaded }]">
       <img :src="img" :alt="name" loading="lazy"
         :class="['w-full h-full object-cover relative', isLoaded ? 'opacity-100' : 'opacity-0']"
         @load="isLoaded = true" />

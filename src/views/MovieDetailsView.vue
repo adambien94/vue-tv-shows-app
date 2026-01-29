@@ -5,20 +5,20 @@
     <div class="container">
       <div v-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 pb-12">
         <div class="sm:flex sm:px-4 items-start">
-          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1]">
+          <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
 
             <img loading="eager" :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
-              class="w-full aspect-[2/3] object-cover" />
+              class="w-full aspect-[2/3] object-cover " />
 
             <div class="absolute left-0 w-full bottom-0 h-full sm:hidden"
               style="background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(10, 10, 10, 1) 75%);">
             </div>
           </div>
 
-          <div class="space-y-4 px-4 pb-6 mt-[-136px] sm:mt-6 sm:px-6">
+          <div class="space-y-4 px-8 pb-6 mt-[-136px] sm:mt-6">
             <div class="space-y-2">
               <h1 class="text-text-primary text-3xl sm:text-5xl font-black">
                 {{ movie.name }}
