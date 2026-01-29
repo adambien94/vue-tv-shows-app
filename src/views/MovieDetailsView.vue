@@ -84,45 +84,8 @@
       </div>
 
       <div v-if="movie" class="space-y-8">
-        <!-- Seasons List -->
-        <HorizontalList v-if="seasons.length > 0">
-          <template #header>
-            <h2 class="text-text-primary">{{ seasons.length }} {{ seasons.length === 1 ? 'Season' : 'Seasons' }}</h2>
-          </template>
+        <SeasonsList :seasons="seasons" />
 
-          <template #items>
-            <div v-for="season in seasons" :key="season.id" class="season-card relative">
-              <div
-                class="relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 rounded-lg lg:rounded-2xl overflow-hidden blend-border bg-secondary/40">
-                <img v-if="season.image?.medium || season.image?.original"
-                  :src="season.image?.medium || season.image?.original" :alt="`Season ${season.number}`" loading="lazy"
-                  class="w-full h-full object-cover" />
-                <div v-else class="w-full h-full bg-gradient-to-br from-accent-primary/20 to-accent-primary/5" />
-
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-8">
-                  <span class="text-text-primary font-bold text-sm lg:text-base">Season {{ season.number }}</span>
-                  <span v-if="season.episodeOrder" class="block text-text-secondary text-xs mt-0.5">
-                    {{ season.episodeOrder }} episodes
-                  </span>
-                </div>
-              </div>
-
-              <!-- Season number overlay (outside overflow-hidden) -->
-              <div class="absolute top-3 left-3 pointer-events-none">
-                <!-- Gradient background -->
-                <div
-                  class="absolute -inset-4 [background:radial-gradient(ellipse_closest-side_at_center,rgba(0,0,0,.4)_0%,rgba(0,0,0,.24)_30%,rgba(0,0,0,.1)_60%,transparent_100%)]" />
-                <!-- Number -->
-                <span
-                  class="relative text-5xl lg:text-6xl font-black text-white/90 [mask-image:linear-gradient(to_bottom,black_60%,transparent)]">
-                  {{ season.number }}
-                </span>
-              </div>
-            </div>
-          </template>
-        </HorizontalList>
-
-        <!-- Other Movies in Genre -->
         <HorizontalList v-if="activeGenre && moviesInGenre.length > 0">
           <template #header>
             <RouterLink :to="{ name: 'search', query: { genre: activeGenre } }"
@@ -149,6 +112,7 @@
 import AppHeader from '@/components/AppHeader.vue'
 import HorizontalList from '@/components/HorizontalList.vue'
 import MovieCard from '@/components/MovieCard.vue'
+import SeasonsList from '@/components/SeasonsList.vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useMovies } from '@/composables/useMovies'
