@@ -1,3 +1,22 @@
+/**
+ * Rate Limiter - Prevents hitting TVMaze API rate limits
+ *
+ * THE PROBLEM:
+ * TVMaze allows max 20 API calls per 10 seconds.
+ * If you exceed this, you get HTTP 429 "Too Many Requests".
+ *
+ * THE SOLUTION:
+ * This rate limiter:
+ * 1. Queues all API requests
+ * 2. Adds a 500ms delay between requests (= max 2 per second)
+ * 3. If we get a 429, backs off exponentially (1s, 2s, 4s, 8s...)
+ * 4. Retries failed requests automatically
+ *
+ * USAGE:
+ *   Instead of: fetch(url)
+ *   Use:        throttledFetch(url)
+ */
+
 type QueuedRequest = {
   url: string
   resolve: (value: Response) => void
@@ -6,14 +25,18 @@ type QueuedRequest = {
 }
 
 const MAX_RETRIES = 5
-const BASE_DELAY_MS = 500 // 2 requests per second = 500ms between requests
-const MAX_BACKOFF_MS = 16000
+const BASE_DELAY_MS = 500 // 500ms between requests = max 2 per second
+const MAX_BACKOFF_MS = 16000 // Max wait time: 16 seconds
 
 class RateLimiter {
   private queue: QueuedRequest[] = []
   private isProcessing = false
   private lastRequestTime = 0
 
+  /**
+   * Queue a fetch request
+   * Returns a Promise that resolves when the request completes
+   */
   async fetch(url: string): Promise<Response> {
     return new Promise((resolve, reject) => {
       this.queue.push({ url, resolve, reject, retryCount: 0 })
@@ -21,7 +44,12 @@ class RateLimiter {
     })
   }
 
+  /**
+   * Process the queue one request at a time
+   * Ensures proper spacing between requests
+   */
   private async processQueue(): Promise<void> {
+    // Don't start if already processing
     if (this.isProcessing || this.queue.length === 0) {
       return
     }
@@ -42,23 +70,25 @@ class RateLimiter {
         const response = await fetch(request.url)
         this.lastRequestTime = Date.now()
 
+        // Handle rate limiting (HTTP 429)
         if (response.status === 429) {
-          // Rate limited - apply exponential backoff
           if (request.retryCount < MAX_RETRIES) {
+            // Exponential backoff: 1s, 2s, 4s, 8s, 16s
             const backoffMs = Math.min(
               Math.pow(2, request.retryCount) * 1000,
               MAX_BACKOFF_MS,
             )
             console.warn(
-              `Rate limited (429). Retrying in ${backoffMs}ms (attempt ${request.retryCount + 1}/${MAX_RETRIES})`,
+              `Rate limited (429). Waiting ${backoffMs}ms before retry ${request.retryCount + 1}/${MAX_RETRIES}`,
             )
             await this.delay(backoffMs)
             request.retryCount++
-            this.queue.unshift(request) // Re-add to front of queue
+            this.queue.unshift(request) // Put back at front of queue
           } else {
             request.reject(new Error('Max retries exceeded due to rate limiting'))
           }
         } else {
+          // Success! Resolve the promise
           request.resolve(response)
         }
       } catch (error) {
@@ -69,7 +99,7 @@ class RateLimiter {
             MAX_BACKOFF_MS,
           )
           console.warn(
-            `Network error. Retrying in ${backoffMs}ms (attempt ${request.retryCount + 1}/${MAX_RETRIES})`,
+            `Network error. Waiting ${backoffMs}ms before retry ${request.retryCount + 1}/${MAX_RETRIES}`,
           )
           await this.delay(backoffMs)
           request.retryCount++
@@ -83,11 +113,16 @@ class RateLimiter {
     this.isProcessing = false
   }
 
+  /**
+   * Helper: Wait for specified milliseconds
+   */
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
-  // Cancel all pending requests
+  /**
+   * Cancel all pending requests (useful for cleanup)
+   */
   clear(): void {
     for (const request of this.queue) {
       request.reject(new Error('Request cancelled'))
@@ -95,16 +130,23 @@ class RateLimiter {
     this.queue = []
   }
 
-  // Get queue length for progress tracking
+  /**
+   * How many requests are waiting? (for debugging)
+   */
   get pendingCount(): number {
     return this.queue.length
   }
 }
 
-// Singleton instance
+// Single instance for the whole app
 export const rateLimiter = new RateLimiter()
 
-// Convenience function
+/**
+ * Convenience function - use this instead of fetch()
+ *
+ * Example:
+ *   const response = await throttledFetch('https://api.tvmaze.com/shows/1')
+ */
 export function throttledFetch(url: string): Promise<Response> {
   return rateLimiter.fetch(url)
 }

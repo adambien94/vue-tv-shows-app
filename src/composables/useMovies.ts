@@ -1,13 +1,35 @@
+/**
+ * useMovies Composable - Local-First Data Access
+ *
+ * THE ARCHITECTURE:
+ * This composable is the main way views access TV show data.
+ * It implements a "local-first" pattern:
+ *
+ *   1. Always try to read from IndexedDB first (instant!)
+ *   2. Fall back to API if local data is missing
+ *   3. Cache any API responses for future use
+ *
+ * WHY LOCAL-FIRST?
+ * - Instant load times (no network wait)
+ * - Works offline
+ * - Reduces API calls (respects rate limits)
+ * - Better UX (data appears immediately)
+ *
+ * HOW GENRE GROUPING WORKS:
+ * Since TVMaze has no genre endpoint, we:
+ * 1. Fetch all shows (which include genres array)
+ * 2. Store in IndexedDB with multi-entry index on genres
+ * 3. Group shows by genre in the moviesByGenre computed property
+ * 4. Sort each genre group by rating
+ */
+
 import { ref, computed } from 'vue'
 import { db, type Show } from '@/db'
 import { throttledFetch } from '@/services/rateLimiter'
 import { syncShows, useSyncStatus } from '@/services/syncService'
 
-// Re-export Show type for convenience
 export type { Show }
-
-// Alias for backward compatibility
-export type Movie = Show
+export type Movie = Show // Alias for backward compatibility
 
 type SearchResult = {
   score: number
@@ -18,58 +40,73 @@ const API_URL = 'https://api.tvmaze.com/shows'
 const SEARCH_API_URL = 'https://api.tvmaze.com/search/shows'
 
 export function useMovies() {
+  // Reactive state
   const movies = ref<Show[]>([])
   const searchResults = ref<Show[]>([])
   const currentMovie = ref<Show | null>(null)
   const loading = ref(false)
   const searchLoading = ref(false)
 
-  // Expose sync status
+  // Sync status (for showing progress bar)
   const { isSyncing, syncProgress, syncMessage, syncError } = useSyncStatus()
 
   /**
-   * Fetch movies from IndexedDB (local-first)
-   * Triggers sync if database is empty
+   * Fetch all shows for the dashboard
+   *
+   * LOCAL-FIRST APPROACH:
+   * 1. Check IndexedDB for cached shows
+   * 2. If found → use them immediately, sync in background
+   * 3. If empty → sync first, then load from cache
    */
   const fetchMovies = async () => {
     loading.value = true
     try {
-      // First, try to load from IndexedDB
-      const localShows = await db.shows.toArray()
+      // Step 1: Try to load from local cache (instant!)
+      const cachedShows = await db.shows.toArray()
 
-      if (localShows.length > 0) {
-        movies.value = localShows
-        // Trigger background sync to check for updates
+      if (cachedShows.length > 0) {
+        // We have cached data - use it immediately
+        movies.value = cachedShows
+        // Trigger background sync to check if data needs refresh
         syncShows().catch(console.error)
       } else {
-        // No local data - need to sync first
+        // No cached data - need to fetch from API first
         await syncShows()
         movies.value = await db.shows.toArray()
       }
     } catch (err) {
-      console.error('Failed to fetch movies:', err)
-      // Fallback to API if IndexedDB fails
-      try {
-        const response = await fetch(API_URL)
-        if (response.ok) {
-          const data: Show[] = await response.json()
-          movies.value = data
-          // Try to save to IndexedDB
-          await db.shows.bulkPut(data).catch(console.error)
-        }
-      } catch (apiErr) {
-        if (apiErr instanceof Error) {
-          alert(apiErr.message)
-        }
-      }
+      console.error('Failed to fetch movies from cache:', err)
+      // Fallback: direct API call if IndexedDB fails
+      await fetchMoviesFromApi()
     } finally {
       loading.value = false
     }
   }
 
   /**
-   * Search shows via API (fuzzy search)
-   * Results are cached to IndexedDB
+   * Direct API fetch (fallback when IndexedDB fails)
+   */
+  const fetchMoviesFromApi = async () => {
+    try {
+      const response = await fetch(API_URL)
+      if (!response.ok) throw new Error('Failed to fetch TV shows')
+      const data: Show[] = await response.json()
+      movies.value = data
+      // Try to cache for next time
+      db.shows.bulkPut(data).catch(console.error)
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message)
+      }
+    }
+  }
+
+  /**
+   * Search shows using TVMaze's fuzzy search API
+   *
+   * WHY USE API FOR SEARCH?
+   * TVMaze's search is fuzzy (handles typos) and searches ALL shows,
+   * not just the ~500 we have cached. Results are cached for offline use.
    */
   const searchMoviesApi = async (query: string) => {
     if (!query.trim()) {
@@ -79,6 +116,7 @@ export function useMovies() {
 
     searchLoading.value = true
     try {
+      // Use throttled fetch to respect rate limits
       const response = await throttledFetch(
         `${SEARCH_API_URL}?q=${encodeURIComponent(query)}`,
       )
@@ -89,32 +127,26 @@ export function useMovies() {
       const shows = data.map((result) => result.show)
       searchResults.value = shows
 
-      // Cache search results to IndexedDB
-      await db.shows.bulkPut(shows).catch(console.error)
+      // Cache search results so they're available offline
+      db.shows.bulkPut(shows).catch(console.error)
 
       return shows
     } catch (err) {
-      if (err instanceof Error) {
-        console.error('Search API error:', err.message)
-        // Fall back to local search on API failure
-        return searchMoviesLocal(query)
-      }
-      return []
+      console.error('Search API error:', err)
+      // Network failed - fall back to searching cached data
+      return searchMoviesLocal(query)
     } finally {
       searchLoading.value = false
     }
   }
 
   /**
-   * Local search in IndexedDB
-   * Uses case-insensitive partial matching
+   * Search locally in cached shows (works offline!)
    */
   const searchMoviesLocal = async (query: string): Promise<Show[]> => {
     if (!query.trim()) return []
 
     const q = query.toLowerCase()
-
-    // Use Dexie's filter for flexible matching
     const results = await db.shows
       .filter((show) => show.name.toLowerCase().includes(q))
       .limit(50)
@@ -125,22 +157,25 @@ export function useMovies() {
   }
 
   /**
-   * Fetch a single movie by ID
-   * Checks IndexedDB first, falls back to API
+   * Fetch a single show by ID
+   *
+   * LOCAL-FIRST:
+   * 1. Check IndexedDB first (might already have it from dashboard)
+   * 2. If not found → fetch from API and cache it
    */
   const fetchMovieById = async (id: number) => {
     loading.value = true
     currentMovie.value = null
     try {
-      // Try IndexedDB first
-      const localShow = await db.shows.get(id)
-
-      if (localShow) {
-        currentMovie.value = localShow
-        return localShow
+      // Step 1: Check local cache first
+      const cached = await db.shows.get(id)
+      if (cached) {
+        currentMovie.value = cached
+        loading.value = false
+        return cached
       }
 
-      // Not in cache - fetch from API
+      // Step 2: Not in cache - fetch from API
       const response = await throttledFetch(`${API_URL}/${id}`)
       if (!response.ok) {
         throw new Error('Failed to fetch TV show details')
@@ -148,15 +183,13 @@ export function useMovies() {
       const data: Show = await response.json()
       currentMovie.value = data
 
-      // Cache to IndexedDB
-      await db.shows.put(data).catch(console.error)
+      // Step 3: Cache for future visits
+      db.shows.put(data).catch(console.error)
 
       return data
     } catch (err) {
       if (err instanceof Error) {
         alert(err.message)
-      } else {
-        alert('Unknown error')
       }
       return null
     } finally {
@@ -165,26 +198,39 @@ export function useMovies() {
   }
 
   /**
-   * Get movies grouped by genre from IndexedDB
-   * Uses the multi-entry genre index for efficient queries
+   * THE MAGIC: Group shows by genre and sort by rating
+   *
+   * THIS IS HOW WE SOLVE "NO GENRE ENDPOINT":
+   *
+   * Input: Array of shows, each with genres like ["Drama", "Crime"]
+   * Output: Object like {
+   *   "Drama": [show1, show2, ...],   // sorted by rating
+   *   "Crime": [show3, show4, ...],   // sorted by rating
+   *   "Comedy": [show5, show6, ...],  // sorted by rating
+   * }
+   *
+   * A show with genres ["Drama", "Crime"] appears in BOTH lists!
    */
   const moviesByGenre = computed<Record<string, Show[]>>(() => {
     const moviesMap: Record<string, Show[]> = {}
 
+    // Step 1: Group shows by each genre they belong to
     for (const movie of movies.value) {
       for (const genre of movie.genres) {
         if (!moviesMap[genre]) {
           moviesMap[genre] = []
         }
+        // A show can appear in multiple genre lists
         moviesMap[genre].push(movie)
       }
     }
 
-    // Sort by rating and limit per genre
+    // Step 2: Sort each genre's shows by rating (best first)
     for (const genre of Object.keys(moviesMap)) {
       moviesMap[genre]?.sort(
         (a, b) => (b.rating.average ?? 0) - (a.rating.average ?? 0),
       )
+      // Limit to top 20 per genre for performance
       moviesMap[genre] = moviesMap[genre]?.slice(0, 20) || []
     }
 
@@ -192,51 +238,34 @@ export function useMovies() {
   })
 
   /**
-   * Quick local search (synchronous, searches loaded movies)
+   * Quick synchronous search (for autocomplete, etc.)
+   * Searches only currently loaded movies
    */
   const searchMovies = (query: string) => {
     if (!query) return []
-
     const q = query.toLowerCase()
-
     return movies.value.filter((movie) => movie.name.toLowerCase().includes(q))
   }
 
-  /**
-   * Get shows by genre from IndexedDB using the index
-   */
-  const getShowsByGenre = async (genre: string, limit = 20): Promise<Show[]> => {
-    return await db.shows
-      .where('genres')
-      .equals(genre)
-      .limit(limit)
-      .sortBy('rating.average')
-      .then((shows) => shows.reverse()) // Sort descending
-  }
-
-  /**
-   * Get total show count from IndexedDB
-   */
-  const getTotalShowCount = async (): Promise<number> => {
-    return await db.shows.count()
-  }
-
   return {
+    // Data
     movies,
     moviesByGenre,
+    searchResults,
+    currentMovie,
+
+    // Actions
     fetchMovies,
+    fetchMovieById,
     searchMovies,
     searchMoviesApi,
     searchMoviesLocal,
-    fetchMovieById,
-    searchResults,
-    currentMovie,
+
+    // Loading states
     loading,
     searchLoading,
-    // New local-first utilities
-    getShowsByGenre,
-    getTotalShowCount,
-    // Sync status
+
+    // Sync status (for progress UI)
     isSyncing,
     syncProgress,
     syncMessage,
