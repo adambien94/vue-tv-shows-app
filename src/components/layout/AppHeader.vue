@@ -41,20 +41,12 @@ const route = useRoute()
 const goHome = (e: MouseEvent) => {
   if (route.name === 'home') return
   e.preventDefault()
-  if (document.startViewTransition) {
-    document.startViewTransition(() => router.push('/'))
-  } else {
-    router.push('/')
-  }
+  router.push('/')
 }
 
 const onSearchFocus = () => {
   if (route.name !== 'search') {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => router.push({ name: 'search' }))
-    } else {
-      router.push({ name: 'search' })
-    }
+    router.push({ name: 'search' })
   }
 }
 </script>

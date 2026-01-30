@@ -15,13 +15,14 @@ type SearchResult = {
 const API_URL = 'https://api.tvmaze.com/shows'
 const SEARCH_API_URL = 'https://api.tvmaze.com/search/shows'
 
-export function useMovies() {
-  const movies = ref<Show[]>([])
-  const searchResults = ref<Show[]>([])
-  const currentMovie = ref<Show | null>(null)
-  const loading = ref(false)
-  const searchLoading = ref(false)
+// Singleton state - persists across navigation
+const movies = ref<Show[]>([])
+const searchResults = ref<Show[]>([])
+const currentMovie = ref<Show | null>(null)
+const loading = ref(false)
+const searchLoading = ref(false)
 
+export function useMovies() {
   const { isSyncing, syncProgress, syncMessage, syncError } = useSyncStatus()
 
   const fetchMovies = async () => {

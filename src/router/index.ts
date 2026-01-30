@@ -14,19 +14,19 @@ const router = createRouter({
     { path: '/search', name: 'search', component: SearchView, meta: { title: 'Search' } },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView, meta: { title: 'Page Not Found' } },
   ],
-  scrollBehavior() {
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
     return { top: 0 }
   },
 })
 
-// Handle view transitions for all navigations
 router.beforeResolve(async (to, from) => {
-  // Skip if navigating to same path or view transitions not supported
   if (to.path === from.path || !document.startViewTransition) {
     return
   }
 
-  // Wrap the navigation in a view transition
   return new Promise<void>((resolve) => {
     document.startViewTransition(() => {
       resolve()
