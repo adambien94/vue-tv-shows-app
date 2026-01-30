@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -188,14 +188,7 @@ onMounted(async () => {
 
 watch(movieId, async (newId) => {
   if (newId !== null) {
-    window.scrollTo({ top: 0 })
-    if (document.startViewTransition) {
-      document.startViewTransition(async () => {
-        await fetchMovieById(newId)
-      })
-    } else {
-      await fetchMovieById(newId)
-    }
+    await fetchMovieById(newId)
     fetchSeasons(newId)
   }
 })

@@ -19,6 +19,21 @@ const router = createRouter({
   },
 })
 
+// Handle view transitions for all navigations
+router.beforeResolve(async (to, from) => {
+  // Skip if navigating to same path or view transitions not supported
+  if (to.path === from.path || !document.startViewTransition) {
+    return
+  }
+
+  // Wrap the navigation in a view transition
+  return new Promise<void>((resolve) => {
+    document.startViewTransition(() => {
+      resolve()
+    })
+  })
+})
+
 router.afterEach((to) => {
   const pageTitle = to.meta.title as string | undefined
   document.title = pageTitle ? `${pageTitle} | ${APP_TITLE}` : APP_TITLE
