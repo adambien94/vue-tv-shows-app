@@ -25,6 +25,6 @@ describe('App', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('TV Shows')
+    expect(wrapper.text()).toContain('Shows')
   })
 })

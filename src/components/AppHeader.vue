@@ -22,7 +22,9 @@
             </svg>
           </button>
         </div>
-        <div class="w-12 h-12 bg-white/10 rounded-full lg:order-1"></div>
+        <div class="w-12 h-12 bg-white/10 rounded-full lg:order-1 overflow-hidden">
+          <img src="../assets/image/TV-show-profile.png" alt="logo" class="w-full h-full object-cover">
+        </div>
       </div>
     </nav>
   </header>
