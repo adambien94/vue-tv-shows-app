@@ -16,9 +16,8 @@
               style="background: linear-gradient(to top, rgba(0, 0, 0, 0) 80%, rgba(10, 10, 10, 0.7) 100%);">
             </div>
 
-            <img v-if="movie.image?.original || movie.image?.medium" loading="eager"
-              :src="movie.image?.original || movie.image?.medium" :alt="movie.name"
-              class="w-full aspect-[2/3] object-cover " />
+            <img v-if="movie.image?.medium || movie.image?.original" loading="eager" :src="posterSrc" :alt="movie.name"
+              class="w-full aspect-[2/3] object-cover transition-opacity duration-300" />
             <div v-else
               class="w-full aspect-[2/3] bg-secondary/60 flex flex-col items-center justify-center text-text-tertiary">
               <svg class="w-20 h-20 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -125,6 +124,22 @@ const { movies, fetchMovies, fetchMovieById, currentMovie, loading } = useMovies
 const isExpanded = ref(false)
 const seasons = ref<Season[]>([])
 const seasonsLoading = ref(false)
+const posterSrc = ref('')
+
+// Progressive image loading: show medium first, then upgrade to original
+const preloadHighResImage = (mediumUrl: string | undefined, originalUrl: string | undefined) => {
+  // Start with medium (fast)
+  posterSrc.value = mediumUrl || originalUrl || ''
+
+  // If we have both, preload original in background
+  if (mediumUrl && originalUrl && mediumUrl !== originalUrl) {
+    const img = new Image()
+    img.onload = () => {
+      posterSrc.value = originalUrl
+    }
+    img.src = originalUrl
+  }
+}
 
 const fetchSeasons = async (showId: number) => {
   seasonsLoading.value = true
@@ -179,6 +194,9 @@ const movie = computed(() => currentMovie.value)
 
 watch(movie, (newMovie) => {
   document.title = newMovie ? `${newMovie.name} | TV Shows` : 'TV Shows'
+  if (newMovie?.image) {
+    preloadHighResImage(newMovie.image.medium, newMovie.image.original)
+  }
 }, { immediate: true })
 
 const movieSummary = computed(() => {
