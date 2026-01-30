@@ -5,9 +5,9 @@ import HorizontalList from '@/components/HorizontalList.vue'
 import { createMockSeason, createMockSeasons } from '../setup'
 
 describe('SeasonsList', () => {
-  const mountComponent = (seasons = createMockSeasons(3)) => {
+  const mountComponent = (seasons = createMockSeasons(3), loading = false) => {
     return mount(SeasonsList, {
-      props: { seasons },
+      props: { seasons, loading },
       global: {
         stubs: {
           HorizontalList: {
@@ -20,8 +20,8 @@ describe('SeasonsList', () => {
   }
 
   describe('visibility', () => {
-    it('should not render when seasons array is empty', () => {
-      const wrapper = mountComponent([])
+    it('should not render when seasons array is empty and not loading', () => {
+      const wrapper = mountComponent([], false)
 
       expect(wrapper.find('.horizontal-list-stub').exists()).toBe(false)
     })
@@ -30,6 +30,36 @@ describe('SeasonsList', () => {
       const wrapper = mountComponent(createMockSeasons(3))
 
       expect(wrapper.find('.horizontal-list-stub').exists()).toBe(true)
+    })
+
+    it('should render when loading even with empty seasons', () => {
+      const wrapper = mountComponent([], true)
+
+      expect(wrapper.find('.horizontal-list-stub').exists()).toBe(true)
+    })
+  })
+
+  describe('loading skeleton', () => {
+    it('should show skeleton card when loading', () => {
+      const wrapper = mountComponent([], true)
+
+      const skeletonCard = wrapper.find('.season-card')
+      expect(skeletonCard.exists()).toBe(true)
+      expect(skeletonCard.find('.animate-pulse').exists()).toBe(true)
+    })
+
+    it('should show skeleton header when loading', () => {
+      const wrapper = mountComponent([], true)
+
+      const skeletonHeader = wrapper.find('h2 .animate-pulse')
+      expect(skeletonHeader.exists()).toBe(true)
+    })
+
+    it('should not show skeleton when data is loaded', () => {
+      const wrapper = mountComponent(createMockSeasons(3), false)
+
+      const pulseElements = wrapper.findAll('.animate-pulse')
+      expect(pulseElements).toHaveLength(0)
     })
   })
 
@@ -166,8 +196,8 @@ describe('SeasonsList', () => {
       const wrapper = mountComponent(createMockSeasons(2))
 
       const card = wrapper.find('.season-card .relative')
-      expect(card.classes()).toContain('min-w-32')
-      expect(card.classes()).toContain('lg:min-w-48')
+      expect(card.classes()).toContain('w-32')
+      expect(card.classes()).toContain('lg:w-48')
     })
 
     it('should have responsive border radius', () => {

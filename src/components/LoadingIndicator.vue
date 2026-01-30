@@ -43,6 +43,7 @@ onUnmounted(() => {
 }
 
 @keyframes equalizer {
+
   0%,
   100% {
     transform: scaleY(0.3);

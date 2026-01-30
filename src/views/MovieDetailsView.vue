@@ -60,10 +60,10 @@
             </div>
 
             <div class="max-w-3xl">
-              <p class="text-text-secondary leading-relaxed" :class="{ 'line-clamp-4 lg:line-clamp-none': !isExpanded }"
-                v-html="movieSummary" />
-              <button v-if="movieSummary !== 'No overview yet.'" @click="isExpanded = !isExpanded"
-                class="lg:hidden mt-2 text-accent-primary font-medium text-sm hover:underline">
+              <p ref="summaryRef" class="text-text-secondary leading-relaxed"
+                :class="{ 'line-clamp-4 lg:line-clamp-[9]': !isExpanded }" v-html="movieSummary" />
+              <button v-if="movieSummary !== 'No overview yet.' && (isClamped || isExpanded)"
+                @click="isExpanded = !isExpanded" class="mt-2 text-accent-primary font-medium text-sm hover:underline">
                 {{ isExpanded ? 'Read Less' : 'Read More' }}
               </button>
             </div>
@@ -83,7 +83,7 @@
       </div>
 
       <div v-if="movie" class="space-y-8">
-        <SeasonsList :seasons="seasons" />
+        <SeasonsList :seasons="seasons" :loading="seasonsLoading" />
 
         <HorizontalList v-if="activeGenre && moviesInGenre.length > 0">
           <template #header>
@@ -112,7 +112,7 @@ import AppHeader from '@/components/AppHeader.vue'
 import HorizontalList from '@/components/HorizontalList.vue'
 import MovieCard from '@/components/MovieCard.vue'
 import SeasonsList from '@/components/SeasonsList.vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useMovies } from '@/composables/useMovies'
 import { throttledFetch } from '@/services/rateLimiter'
@@ -122,9 +122,23 @@ import type { Season } from '@/db'
 const route = useRoute()
 const { movies, fetchMovies, fetchMovieById, currentMovie, loading } = useMovies()
 const isExpanded = ref(false)
+const isClamped = ref(false)
+const summaryRef = ref<HTMLParagraphElement | null>(null)
 const seasons = ref<Season[]>([])
 const seasonsLoading = ref(false)
 const posterSrc = ref('')
+
+// Check if text is overflowing (clamped)
+const checkClamped = () => {
+  if (summaryRef.value) {
+    isClamped.value = summaryRef.value.scrollHeight > summaryRef.value.clientHeight
+  }
+}
+
+// Re-check on window resize (line clamp changes between mobile/desktop)
+const handleResize = () => checkClamped()
+onMounted(() => window.addEventListener('resize', handleResize))
+onUnmounted(() => window.removeEventListener('resize', handleResize))
 
 // Progressive image loading: show medium first, then upgrade to original
 const preloadHighResImage = (mediumUrl: string | undefined, originalUrl: string | undefined) => {
@@ -192,11 +206,15 @@ watch(movieId, async (newId) => {
 
 const movie = computed(() => currentMovie.value)
 
-watch(movie, (newMovie) => {
+watch(movie, async (newMovie) => {
   document.title = newMovie ? `${newMovie.name} | TV Shows` : 'TV Shows'
   if (newMovie?.image) {
     preloadHighResImage(newMovie.image.medium, newMovie.image.original)
   }
+  // Reset and re-check clamp state when movie changes
+  isExpanded.value = false
+  await nextTick()
+  checkClamped()
 }, { immediate: true })
 
 const movieSummary = computed(() => {
