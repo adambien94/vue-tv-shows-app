@@ -126,7 +126,6 @@ onMounted(async () => {
   } else if (searchTerm.value) {
     searchMoviesApi(searchTerm.value)
   } else {
-    // Show limited movies when no search term or genre
     await fetchMovies()
     searchResults.value = movies.value.slice(0, 24)
   }

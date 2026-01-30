@@ -54,7 +54,7 @@ const genres = computed(() => Object.keys(moviesByGenre.value))
   left: 0;
   height: 60vh;
   width: 100%;
-  background: linear-gradient(#6366f180, #0a0a0a);
+  background: linear-gradient(#6366f150, #0a0a0a);
   z-index: -1;
 }
 </style>

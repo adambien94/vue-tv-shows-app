@@ -8,7 +8,6 @@
     </template>
 
     <template #items>
-      <!-- Skeleton card while loading -->
       <div v-if="loading" class="season-card relative self-stretch">
         <div
           class="relative w-32 lg:w-48 aspect-[5/7] rounded-lg lg:rounded-2xl overflow-hidden blend-border bg-secondary/40 animate-pulse">
@@ -20,7 +19,6 @@
         </div>
       </div>
 
-      <!-- Actual season cards -->
       <template v-else>
         <div v-for="season in seasons" :key="season.id" class="season-card relative self-stretch">
           <div

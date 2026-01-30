@@ -1,5 +1,4 @@
 <template>
-  <!-- Offline banner appears above everything when offline -->
   <OfflineBanner />
   <RouterView />
   <SyncStatus />

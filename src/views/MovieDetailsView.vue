@@ -128,24 +128,19 @@ const seasons = ref<Season[]>([])
 const seasonsLoading = ref(false)
 const posterSrc = ref('')
 
-// Check if text is overflowing (clamped)
 const checkClamped = () => {
   if (summaryRef.value) {
     isClamped.value = summaryRef.value.scrollHeight > summaryRef.value.clientHeight
   }
 }
 
-// Re-check on window resize (line clamp changes between mobile/desktop)
 const handleResize = () => checkClamped()
 onMounted(() => window.addEventListener('resize', handleResize))
 onUnmounted(() => window.removeEventListener('resize', handleResize))
 
-// Progressive image loading: show medium first, then upgrade to original
 const preloadHighResImage = (mediumUrl: string | undefined, originalUrl: string | undefined) => {
-  // Start with medium (fast)
   posterSrc.value = mediumUrl || originalUrl || ''
 
-  // If we have both, preload original in background
   if (mediumUrl && originalUrl && mediumUrl !== originalUrl) {
     const img = new Image()
     img.onload = () => {
