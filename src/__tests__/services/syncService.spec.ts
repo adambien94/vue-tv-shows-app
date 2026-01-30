@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { setOnlineStatus, createMockShows, createMockResponse } from '../setup'
+import { setOnlineStatus, createMockShows } from '../setup'
 import { db } from '@/db'
 
 describe('syncService', () => {

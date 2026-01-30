@@ -36,7 +36,6 @@ Instead of hitting the API on every page load, data is fetched once and stored i
 Clicking on any show opens a detailed view with:
 - Show summary and metadata
 - Season and episode information
-- Cast information
 - Rating display
 
 ---

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { setOnlineStatus, createMockShow, createMockShows, createMockResponse } from '../setup'
+import { setOnlineStatus, createMockShow, createMockShows } from '../setup'
 import { db } from '@/db'
 
 describe('useMovies', () => {

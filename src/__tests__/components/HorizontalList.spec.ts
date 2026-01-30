@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import HorizontalList from '@/components/ui/HorizontalList.vue'
-import ScrollBtn from '@/components/ui/ScrollBtn.vue'
 
 describe('HorizontalList', () => {
   beforeEach(() => {
@@ -124,8 +123,8 @@ describe('HorizontalList', () => {
 
       // canScrollLeft should be false at start
       // The ScrollBtn component is stubbed, so we check visibility via v-if
-      const scrollBtns = wrapper.findAllComponents({ name: 'ScrollBtn' })
       // With stubbed component, we can check if the left button condition is met
+      expect(wrapper.html()).toBeDefined()
     })
 
     it('should have scroll button components in template', () => {

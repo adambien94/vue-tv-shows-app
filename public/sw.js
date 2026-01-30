@@ -99,8 +99,6 @@ self.addEventListener('fetch', (event) => {
  * Handle fetch with appropriate caching strategy
  */
 async function handleFetch(request) {
-  const url = new URL(request.url)
-
   // For navigation requests (HTML pages): Network-first
   if (request.mode === 'navigate') {
     return networkFirst(request)
@@ -126,7 +124,7 @@ async function networkFirst(request) {
     }
 
     return networkResponse
-  } catch (error) {
+  } catch {
     // Network failed - try cache
     console.log('[SW] Network failed, trying cache for:', request.url)
     const cachedResponse = await caches.match(request)
@@ -185,7 +183,7 @@ async function cacheFirst(request) {
     }
 
     return networkResponse
-  } catch (error) {
+  } catch {
     // Network failed and not in cache
     console.log('[SW] Resource not available:', request.url)
     return new Response('Not found', { status: 404 })
