@@ -20,7 +20,7 @@
       </div>
 
       <template v-else>
-        <div v-for="season in seasons" :key="season.id" class="season-card relative self-stretch">
+        <div v-for="season in seasons" :key="season.id" class="season-card relative self-stretch ">
           <div
             class="relative w-32 lg:w-48 aspect-[5/7] rounded-lg lg:rounded-2xl overflow-hidden blend-border bg-secondary/40">
             <img v-if="season.image?.medium || season.image?.original"

@@ -61,6 +61,7 @@ const handleClick = (e: MouseEvent) => {
 
   e.preventDefault()
   document.startViewTransition(() => {
+    window.scrollTo({ top: 0 })
     router.push({
       name: 'movie-details',
       params: { id: props.id },

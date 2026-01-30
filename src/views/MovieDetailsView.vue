@@ -188,6 +188,7 @@ onMounted(async () => {
 
 watch(movieId, async (newId) => {
   if (newId !== null) {
+    window.scrollTo({ top: 0 })
     if (document.startViewTransition) {
       document.startViewTransition(async () => {
         await fetchMovieById(newId)
