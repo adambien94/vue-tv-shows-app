@@ -6,7 +6,7 @@
   }">
     <div
       :class="['relative mx-auto w-full min-w-32 aspect-[5/7] lg:min-w-48 lg:max-w-96 before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', { skeleton: !isLoaded && img }]">
-      <img v-if="img" ref="imgRef" :src="img" :alt="name" loading="lazy"
+      <img v-if="img" ref="imgRef" :src="img" :alt="name" loading="lazy" width="500" height="700"
         :class="['w-full h-full object-cover relative', isLoaded ? 'opacity-100' : 'opacity-0']"
         @load="isLoaded = true" />
       <div v-else class="w-full h-full bg-secondary/60 flex flex-col items-center justify-center text-text-tertiary">

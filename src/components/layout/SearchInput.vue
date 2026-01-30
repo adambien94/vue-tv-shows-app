@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-1 lg:mt-0 bg-secondary rounded-lg relative">
+  <div class="flex-1 lg:mt-0 bg-white/5 rounded-lg relative">
     <input ref="searchInput" type="text"
       class="w-full h-12 rounded-lg px-4 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
       :placeholder="placeholder || 'Search...'" :value="localValue" @input="onInput" @focus="onFocus"
