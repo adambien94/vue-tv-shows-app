@@ -5,7 +5,7 @@
     query: genre ? { genre } : undefined,
   }">
     <div
-      :class="['relative mx-auto w-32 lg:w-48 aspect-[5/7] before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', { skeleton: !isLoaded && img }]">
+      :class="['relative mx-auto aspect-[5/7] before:absolute before:inset-0 after:rounded-[inherit] after:mix-blend-plus-lighter before:bg-white/10 rounded-lg lg:rounded-2xl overflow-hidden blend-border', fluid ? 'w-full' : 'w-32 lg:w-48', { skeleton: !isLoaded && img }]">
       <img v-if="img" ref="imgRef" :src="img" :alt="name" loading="lazy"
         :class="['w-full h-full object-cover relative', isLoaded ? 'opacity-100' : 'opacity-0']"
         @load="isLoaded = true" />
@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <span class="mt-2 block mx-auto w-32 lg:w-48">
+    <span :class="['mt-2 block mx-auto', fluid ? 'w-full' : 'w-32 lg:w-48']">
       <span class="text-text-primary font-bold lg:text-xl line-clamp-1">
         {{ name }}
       </span>
@@ -42,6 +42,7 @@ defineProps<{
   img?: string
   genre?: string
   rating?: number | null
+  fluid?: boolean
 }>()
 
 const imgRef = ref<HTMLImageElement | null>(null)
