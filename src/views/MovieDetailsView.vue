@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -138,16 +138,9 @@ const handleResize = () => checkClamped()
 onMounted(() => window.addEventListener('resize', handleResize))
 onUnmounted(() => window.removeEventListener('resize', handleResize))
 
-const preloadHighResImage = (mediumUrl: string | undefined, originalUrl: string | undefined) => {
-  posterSrc.value = mediumUrl || originalUrl || ''
-
-  if (mediumUrl && originalUrl && mediumUrl !== originalUrl) {
-    const img = new Image()
-    img.onload = () => {
-      posterSrc.value = originalUrl
-    }
-    img.src = originalUrl
-  }
+const setPosterSrc = (mediumUrl: string | undefined, originalUrl: string | undefined) => {
+  // Prioritize original image, fall back to medium
+  posterSrc.value = originalUrl || mediumUrl || ''
 }
 
 const fetchSeasons = async (showId: number) => {
@@ -198,7 +191,7 @@ const movie = computed(() => currentMovie.value)
 watch(movie, async (newMovie) => {
   document.title = newMovie ? `${newMovie.name} | TV Shows` : 'TV Shows'
   if (newMovie?.image) {
-    preloadHighResImage(newMovie.image.medium, newMovie.image.original)
+    setPosterSrc(newMovie.image.medium, newMovie.image.original)
   }
   // Reset and re-check clamp state when movie changes
   isExpanded.value = false
