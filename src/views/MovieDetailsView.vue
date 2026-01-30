@@ -17,7 +17,7 @@
             </div>
 
             <img v-if="movie.image?.medium || movie.image?.original" loading="eager" :src="posterSrc" :alt="movie.name"
-              class="w-full aspect-[2/3] object-cover transition-opacity duration-300" />
+              class="poster-image w-full aspect-[2/3] object-cover" />
             <div v-else
               class="w-full aspect-[2/3] bg-secondary/60 flex flex-col items-center justify-center text-text-tertiary">
               <svg class="w-20 h-20 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -222,6 +222,28 @@ const moviesInGenre = computed(() => {
 </script>
 
 <style scoped>
+/* Scroll-linked animation for poster parallax effect - mobile only, supported browsers */
+@supports (animation-timeline: scroll()) {
+  @media screen and (max-width: 639px) {
+    @keyframes poster-scroll {
+      from {
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        transform: translateY(100px) scale(1.2);
+      }
+    }
+
+    .poster-image {
+      animation: poster-scroll linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 500px;
+      transform-origin: center;
+    }
+  }
+}
+
 @media screen and (min-width: 640px) {
   .details-container:before {
     content: '';
