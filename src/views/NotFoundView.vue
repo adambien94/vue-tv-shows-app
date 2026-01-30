@@ -2,7 +2,7 @@
   <div class="not-found-container min-h-screen flex flex-col">
     <AppHeader />
 
-    <div class="flex-1 flex items-center justify-center px-4">
+    <main class="flex-1 flex items-center justify-center px-4">
       <div class="text-center max-w-lg">
         <div class="glitch-wrapper mb-6">
           <h1 class="error-code font-bold text-[120px] sm:text-[180px] leading-none tracking-tighter">
@@ -32,7 +32,7 @@
 
         <LoadingIndicator container-class="mt-16" />
       </div>
-    </div>
+    </main>
 
     <AppFooter />
   </div>

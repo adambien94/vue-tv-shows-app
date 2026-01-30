@@ -2,33 +2,33 @@
   <div class="pb-12">
     <AppHeader v-model="searchTerm" :autofocus="true" :placeholder="searchPlaceholder" />
 
-    <div class="container min-h-[50vh] pt-3 sm:pt-6 lg:pt-8 lg:px-8">
+    <main class="container min-h-[50vh] pt-3 sm:pt-6 lg:pt-8 lg:px-8">
       <div class="flex justify-between items-center mb-2 sm:mb-4 px-4 ">
-        <div class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
-          <h2>{{ pageTitle }}:</h2>
-        </div>
+        <h1 class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
+          {{ pageTitle }}:
+        </h1>
 
-        <p class="text-text-tertiary text-sm">
+        <p class="text-text-tertiary text-sm" aria-live="polite">
           <template v-if="searchLoading">Searching...</template>
           <template v-else>{{ searchResults.length }} result{{ searchResults.length === 1 ? '' : 's' }}</template>
         </p>
       </div>
 
       <Transition name="fade" mode="out-in">
-        <div v-if="searchLoading" key="loading" class="flex items-center justify-center min-h-[40vh]">
+        <div v-if="searchLoading" key="loading" class="flex items-center justify-center min-h-[40vh]" role="status">
           <LoadingIndicator />
         </div>
 
-        <div v-else-if="searchResults.length" key="results" class="mt-2">
+        <section v-else-if="searchResults.length" key="results" class="mt-2" aria-label="Search results">
           <MovieGrid :movies="searchResults" />
-        </div>
+        </section>
 
         <div v-else-if="searchTerm || selectedGenre" key="empty"
-          class="flex items-center justify-center min-h-[40vh] text-text-tertiary">
+          class="flex items-center justify-center min-h-[40vh] text-text-tertiary" role="status">
           <p>No results found.</p>
         </div>
       </Transition>
-    </div>
+    </main>
   </div>
 </template>
 

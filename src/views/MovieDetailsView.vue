@@ -3,13 +3,13 @@
   <div class="details-container noise-bg min-h-screen relative pb-8 lg:pb-8">
     <AppHeader />
 
-    <div class="container">
-      <div v-if="loading" class="px-4 lg:px-8 pt-10 text-center">
+    <main class="container">
+      <div v-if="loading" class="px-4 lg:px-8 pt-10 text-center" role="status">
         <!-- <p class="text-text-secondary">Loading...</p> -->
       </div>
 
 
-      <div v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 sm:pb-6">
+      <article v-else-if="movie" class="container sm:px-0 lg:px-8 sm:pt-10 sm:pb-6">
         <div class="sm:flex sm:px-4 items-start">
           <div class="relative sm:rounded-2xl overflow-hidden bg-secondary/40 sm:w-96 z-[-1] sm:blend-border">
             <div class="absolute left-0 w-full top-0 h-full sm:hidden"
@@ -75,14 +75,14 @@
             </div>
           </div>
         </div>
-      </div>
+      </article>
 
       <div v-else class="px-4 lg:px-8 pt-10">
         <h1 class="text-text-primary text-2xl font-bold">Movie not found</h1>
         <p class="text-text-secondary mt-2">Try going back and selecting a movie again.</p>
       </div>
 
-      <div v-if="movie" class="space-y-8">
+      <aside v-if="movie" class="space-y-8" aria-label="Related content">
         <SeasonsList :seasons="seasons" :loading="seasonsLoading" />
 
         <HorizontalList v-if="activeGenre && moviesInGenre.length > 0">
@@ -90,20 +90,20 @@
             <RouterLink :to="{ name: 'search', query: { genre: activeGenre } }"
               class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
               <h2>Other in {{ activeGenre }}</h2>
-              <span class="text-accent-primary">&#10095;</span>
+              <span class="text-accent-primary" aria-hidden="true">&#10095;</span>
             </RouterLink>
           </template>
 
           <template #items>
-            <div v-for="m in moviesInGenre" :key="m.id">
+            <article v-for="m in moviesInGenre" :key="m.id">
               <MovieCard :id="m.id" :name="m.name" :genre="activeGenre" :img="m.image?.medium || m.image?.original"
                 :rating="m.rating?.average" />
-            </div>
+            </article>
           </template>
         </HorizontalList>
-      </div>
+      </aside>
 
-    </div>
+    </main>
   </div>
 </template>
 

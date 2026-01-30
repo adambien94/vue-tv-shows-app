@@ -2,26 +2,30 @@
   <div class="homepage-container pb-4">
     <AppHeader />
 
-    <div class="pt-2 lg:pt-4 container">
-      <div class="mt-1 sm:mt-4" v-for="genre in genres" :key="genre">
+    <main class="pt-2 lg:pt-4 container">
+      <h1 class="sr-only">Browse TV Shows by Genre</h1>
+
+      <section class="mt-1 sm:mt-4" v-for="genre in genres" :key="genre" :aria-labelledby="`genre-${genre}`">
         <HorizontalList>
           <template #header>
-            <RouterLink :to="{ name: 'search', query: { genre } }"
-              class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
-              <h2>{{ genre }}</h2>
-              <span class="text-accent-primary">&#10095;</span>
-            </RouterLink>
+            <h2>
+              <RouterLink :to="{ name: 'search', query: { genre } }"
+                class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
+                {{ genre }}
+                <span class="text-accent-primary">&#10095;</span>
+              </RouterLink>
+            </h2>
           </template>
 
           <template #items>
-            <div v-for="movie in moviesByGenre[genre]" :key="movie.id">
+            <article v-for="movie in moviesByGenre[genre]" :key="movie.id">
               <MovieCard :id="movie.id" :name="movie.name" :genre="genre"
                 :img="movie.image?.medium || movie.image?.original" :rating="movie.rating?.average" />
-            </div>
+            </article>
           </template>
         </HorizontalList>
-      </div>
-    </div>
+      </section>
+    </main>
   </div>
   <AppFooter />
 
