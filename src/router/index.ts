@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import MovieDetailsView from '@/views/MovieDetailsView.vue'
 import SearchView from '@/views/SearchView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const APP_TITLE = 'TV Shows'
 
@@ -11,6 +12,7 @@ const router = createRouter({
     { path: '/', name: 'home', component: HomeView, meta: { title: 'Home' } },
     { path: '/movie/:id', name: 'movie-details', component: MovieDetailsView },
     { path: '/search', name: 'search', component: SearchView, meta: { title: 'Search' } },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView, meta: { title: 'Page Not Found' } },
   ],
   scrollBehavior() {
     return { top: 0 }
