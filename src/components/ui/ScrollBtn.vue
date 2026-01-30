@@ -14,6 +14,4 @@
 defineProps<{
   direction: 'left' | 'right'
 }>()
-
-
 </script>

@@ -20,7 +20,7 @@
         </div>
 
         <div v-else-if="searchResults.length" key="results" class="mt-2">
-          <SearchList :movies="searchResults" />
+          <MovieGrid :movies="searchResults" />
         </div>
 
         <div v-else-if="searchTerm || selectedGenre" key="empty"
@@ -35,9 +35,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AppHeader from '@/components/AppHeader.vue'
-import LoadingIndicator from '@/components/LoadingIndicator.vue'
-import SearchList from '@/components/SearchList.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import LoadingIndicator from '@/components/ui/LoadingIndicator.vue'
+import MovieGrid from '@/components/movie/MovieGrid.vue'
 import { useMovies, type Show } from '@/composables/useMovies'
 
 const route = useRoute()

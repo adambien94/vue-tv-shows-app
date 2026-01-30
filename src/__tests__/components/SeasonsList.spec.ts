@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import SeasonsList from '@/components/SeasonsList.vue'
-import HorizontalList from '@/components/HorizontalList.vue'
+import SeasonsList from '@/components/movie/SeasonsList.vue'
+import HorizontalList from '@/components/ui/HorizontalList.vue'
 import { createMockSeason, createMockSeasons } from '../setup'
 
 describe('SeasonsList', () => {

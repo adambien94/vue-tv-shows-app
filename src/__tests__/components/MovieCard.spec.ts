@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount, RouterLinkStub } from '@vue/test-utils'
-import MovieCard from '@/components/MovieCard.vue'
+import MovieCard from '@/components/movie/MovieCard.vue'
 
 // Mock useRouter
 vi.mock('vue-router', async () => {

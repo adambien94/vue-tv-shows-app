@@ -28,10 +28,10 @@
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/AppHeader.vue'
-import AppFooter from '@/components/AppFooter.vue'
-import HorizontalList from '@/components/HorizontalList.vue'
-import MovieCard from '@/components/MovieCard.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
+import HorizontalList from '@/components/ui/HorizontalList.vue'
+import MovieCard from '@/components/movie/MovieCard.vue'
 import { RouterLink } from 'vue-router'
 import { computed, onMounted } from 'vue'
 import { useMovies } from '@/composables/useMovies'

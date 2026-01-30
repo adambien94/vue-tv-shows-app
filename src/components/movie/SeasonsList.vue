@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import HorizontalList from '@/components/HorizontalList.vue'
+import HorizontalList from '@/components/ui/HorizontalList.vue'
 import type { Season } from '@/db'
 
 defineProps<{

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import ScrollBtn from '@/components/ScrollBtn.vue'
+import ScrollBtn from '@/components/ui/ScrollBtn.vue'
 import { ref, onMounted, onUnmounted, nextTick, useTemplateRef } from 'vue'
 
 defineProps<{

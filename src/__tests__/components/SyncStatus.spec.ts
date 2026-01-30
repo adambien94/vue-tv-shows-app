@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { ref, readonly, nextTick } from 'vue'
-import SyncStatus from '@/components/SyncStatus.vue'
+import SyncStatus from '@/components/feedback/SyncStatus.vue'
 
 // Mock the syncService module
 vi.mock('@/services/syncService', () => {

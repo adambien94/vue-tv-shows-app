@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { ref, nextTick } from 'vue'
-import OfflineBanner from '@/components/OfflineBanner.vue'
+import OfflineBanner from '@/components/feedback/OfflineBanner.vue'
 
 // Mock the useNetwork composable
 const mockIsOnline = ref(true)

@@ -39,9 +39,9 @@
 </template>
 
 <script setup lang="ts">
-import AppHeader from '@/components/AppHeader.vue'
-import AppFooter from '@/components/AppFooter.vue'
-import LoadingIndicator from '@/components/LoadingIndicator.vue'
+import AppHeader from '@/components/layout/AppHeader.vue'
+import AppFooter from '@/components/layout/AppFooter.vue'
+import LoadingIndicator from '@/components/ui/LoadingIndicator.vue'
 import { RouterLink } from 'vue-router'
 </script>
 

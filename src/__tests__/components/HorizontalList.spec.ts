@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import HorizontalList from '@/components/HorizontalList.vue'
-import ScrollBtn from '@/components/ScrollBtn.vue'
+import HorizontalList from '@/components/ui/HorizontalList.vue'
+import ScrollBtn from '@/components/ui/ScrollBtn.vue'
 
 describe('HorizontalList', () => {
   beforeEach(() => {
