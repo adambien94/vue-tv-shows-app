@@ -14,17 +14,20 @@
         </p>
       </div>
 
-      <div v-if="searchLoading" class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
-        <p>Searching...</p>
-      </div>
+      <Transition name="fade" mode="out-in">
+        <div v-if="searchLoading" key="loading" class="flex items-center justify-center min-h-[40vh]">
+          <LoadingIndicator />
+        </div>
 
-      <div v-else-if="searchResults.length" class="mt-2">
-        <SearchList :movies="searchResults" />
-      </div>
+        <div v-else-if="searchResults.length" key="results" class="mt-2">
+          <SearchList :movies="searchResults" />
+        </div>
 
-      <div v-else-if="searchTerm || selectedGenre" class="px-4 lg:px-12 mt-8 text-text-tertiary text-center">
-        <p>No results found.</p>
-      </div>
+        <div v-else-if="searchTerm || selectedGenre" key="empty"
+          class="flex items-center justify-center min-h-[40vh] text-text-tertiary">
+          <p>No results found.</p>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -33,6 +36,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import SearchList from '@/components/SearchList.vue'
 import { useMovies, type Show } from '@/composables/useMovies'
 
@@ -128,3 +132,15 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

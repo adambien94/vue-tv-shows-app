@@ -5,7 +5,7 @@
 
     <div class="container">
       <div v-if="loading" class="px-4 lg:px-8 pt-10 text-center">
-        <p class="text-text-secondary">Loading...</p>
+        <!-- <p class="text-text-secondary">Loading...</p> -->
       </div>
 
 

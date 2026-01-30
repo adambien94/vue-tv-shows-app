@@ -30,9 +30,7 @@
           </RouterLink>
         </div>
 
-        <div class="mt-16 flex justify-center gap-2">
-          <span v-for="i in 5" :key="i" class="bar" :style="{ animationDelay: `${i * 0.1}s` }"></span>
-        </div>
+        <LoadingIndicator container-class="mt-16" />
       </div>
     </div>
 
@@ -43,6 +41,7 @@
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import LoadingIndicator from '@/components/LoadingIndicator.vue'
 import { RouterLink } from 'vue-router'
 </script>
 
@@ -131,29 +130,6 @@ import { RouterLink } from 'vue-router'
 
   93% {
     transform: translateX(calc(-50% - 6px));
-  }
-}
-
-.bar {
-  display: inline-block;
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(to top, #6366f1, #a855f7);
-  border-radius: 2px;
-  animation: equalizer 0.8s ease-in-out infinite;
-}
-
-@keyframes equalizer {
-
-  0%,
-  100% {
-    transform: scaleY(0.3);
-    opacity: 0.4;
-  }
-
-  50% {
-    transform: scaleY(1);
-    opacity: 1;
   }
 }
 
