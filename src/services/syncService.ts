@@ -97,7 +97,7 @@ export async function syncShows(): Promise<void> {
 
     // If we have data and it's fresh (< 1 hour old), skip the fetch
     if (lastSync && showCount > 0 && Date.now() - lastSync < CACHE_DURATION_MS) {
-      console.log('Cache is fresh, skipping sync')
+      // console.log('Cache is fresh, skipping sync')
       syncProgress.value = 100
       syncMessage.value = 'Using cached data'
       isSyncing.value = false
@@ -139,7 +139,7 @@ async function fetchDashboardShows(): Promise<void> {
   for (let page = 0; page < MAX_PAGES; page++) {
     // Check if we went offline during sync
     if (!checkOnline()) {
-      console.log('Went offline during sync, stopping')
+      // console.log('Went offline during sync, stopping')
       syncMessage.value = 'Sync paused (offline)'
       break
     }

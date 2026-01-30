@@ -1,6 +1,6 @@
 <!-- TODO: refactor component -->
 <template>
-  <div class="details-container min-h-screen relative pb-8 lg:pb-8">
+  <div class="details-container noise-bg min-h-screen relative pb-8 lg:pb-8">
     <AppHeader />
 
     <div class="container">
@@ -223,7 +223,7 @@ const moviesInGenre = computed(() => {
 
 <style scoped>
 @media screen and (min-width: 640px) {
-  .details-container:after {
+  .details-container:before {
     content: '';
     display: block;
     position: absolute;
@@ -233,6 +233,9 @@ const moviesInGenre = computed(() => {
     width: 100%;
     background: linear-gradient(#0a0a0a 20%, #6366f130 100%);
     z-index: -5;
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mask-size: 400px 400px;
+    mask-repeat: repeat;
   }
 }
 </style>
