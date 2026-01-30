@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -95,7 +95,7 @@
           </template>
 
           <template #items>
-            <article v-for="m in moviesInGenre" :key="m.id">
+            <article v-for="m in moviesInGenre" :key="m.id" class="w-32 lg:w-48 flex-shrink-0">
               <MovieCard :id="m.id" :name="m.name" :genre="activeGenre" :img="m.image?.medium || m.image?.original"
                 :rating="m.rating?.average" />
             </article>
