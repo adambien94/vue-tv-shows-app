@@ -8,13 +8,8 @@
       </div>
 
       <div class="flex gap-4 items-center mt-2">
-        <SearchInput
-          :model-value="modelValue"
-          :autofocus="autofocus"
-          :placeholder="placeholder"
-          @update:model-value="$emit('update:modelValue', $event)"
-          @focus="onSearchFocus"
-        />
+        <SearchInput :model-value="modelValue" :autofocus="autofocus" :placeholder="placeholder"
+          @update:model-value="$emit('update:modelValue', $event)" @focus="onSearchFocus" />
         <div class="w-12 h-12 bg-white/10 rounded-full lg:order-1 overflow-hidden" />
       </div>
     </nav>
