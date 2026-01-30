@@ -3,7 +3,7 @@
     <AppHeader />
 
     <div class="pt-2 lg:pt-4 container">
-      <div class="mt-4" v-for="genre in genres" :key="genre">
+      <div class="mt-1 sm:mt-4" v-for="genre in genres" :key="genre">
         <HorizontalList>
           <template #header>
             <RouterLink :to="{ name: 'search', query: { genre } }"

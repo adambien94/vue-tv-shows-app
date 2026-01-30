@@ -2,8 +2,8 @@
   <div class="pb-12">
     <AppHeader v-model="searchTerm" :autofocus="true" :placeholder="searchPlaceholder" />
 
-    <div class="container min-h-[50vh] pt-6 lg:pt-8 lg:px-8">
-      <div class="flex justify-between items-center mb-4 px-4 ">
+    <div class="container min-h-[50vh] pt-3 sm:pt-6 lg:pt-8 lg:px-8">
+      <div class="flex justify-between items-center mb-2 sm:mb-4 px-4 ">
         <div class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
           <h2>{{ pageTitle }}:</h2>
         </div>

@@ -6,12 +6,12 @@
       </slot>
     </div>
 
-    <div class="mt-4 relative lg:px-12 group">
+    <div class="mt-2 sm:mt-4 relative lg:px-12 group">
       <ScrollBtn v-if="canScrollLeft" direction="left" @click="arrowScroll('left')"
         class="hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity duration-300 left-0 absolute top-1/2 -translate-y-[calc(50%+32px)]" />
 
       <div ref="scrollContainer"
-        class="overscroll-x-none px-4 lg:-mx-4 flex items-stretch gap-4 [--fade-length:18px] overflow-x-scroll pb-6 scroll-smooth scrollbar-hide lg:[mask-image:linear-gradient(to_right,transparent,black_var(--fade-length),black_calc(100%-var(--fade-length)),transparent)]"
+        class="overscroll-x-contain px-4 lg:-mx-4 flex items-stretch gap-4 [--fade-length:18px] overflow-x-scroll pb-4 sm:pb-6 scroll-smooth scrollbar-hide lg:[mask-image:linear-gradient(to_right,transparent,black_var(--fade-length),black_calc(100%-var(--fade-length)),transparent)]"
         @scroll="handleScroll">
         <slot name="items" />
       </div>
