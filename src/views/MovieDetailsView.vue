@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -193,7 +193,6 @@ watch(movie, async (newMovie) => {
   if (newMovie?.image) {
     setPosterSrc(newMovie.image.medium, newMovie.image.original)
   }
-  // Reset and re-check clamp state when movie changes
   isExpanded.value = false
   await nextTick()
   checkClamped()
