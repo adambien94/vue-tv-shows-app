@@ -20,10 +20,10 @@
     </div>
 
     <span class="mt-2 block w-full">
-      <span class="text-text-primary font-bold lg:text-xl line-clamp-1">
+      <span class="text-text-primary font-bold text-sm lg:text-lg line-clamp-1">
         {{ name }}
       </span>
-      <span class="flex items-center gap-2 mt-1">
+      <span class="flex items-center gap-2">
         <span class="text-text-secondary text-xs lg:text-sm">Rating: <span class="font-semibold">{{ rating?.toFixed(1)
           || '-'
             }}</span> </span>
