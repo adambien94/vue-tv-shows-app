@@ -37,27 +37,22 @@ watch(
   },
 )
 
-const focus = () => {
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      if (searchInput.value) {
-        setTimeout(() => {
-          searchInput.value?.focus()
-        }, 50)
-      }
-    }, 150)
-  })
-}
-
 onMounted(async () => {
   await nextTick()
-  focus()
+  focusInput()
 })
-
 
 onUnmounted(() => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
 })
+
+const focusInput = () => {
+  setTimeout(() => {
+    searchInput.value?.focus()
+  }, 50)
+}
+
+defineExpose({ focusInput })
 
 const onInput = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -73,6 +68,6 @@ const onClear = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
   localValue.value = ''
   emit('update:modelValue', '')
-  searchInput.value?.focus()
+  focusInput()
 }
 </script>
