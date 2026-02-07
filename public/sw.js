@@ -10,15 +10,22 @@
  * WITH THIS: App loads from cache, uses IndexedDB data
  */
 
-const CACHE_NAME = 'tv-shows-v1'
+const CACHE_NAME = 'tv-shows-v2'
+
+/**
+ * Get the base path from the service worker's location
+ * e.g., if sw.js is at /vue-tv-shows-app/sw.js, base is /vue-tv-shows-app/
+ */
+function getBasePath() {
+  const swPath = self.location.pathname
+  // Remove /sw.js from the path to get the base
+  const basePath = swPath.substring(0, swPath.lastIndexOf('/') + 1)
+  return basePath
+}
 
 // Files to cache immediately on install
 // These are the essential files needed to run the app
-const PRECACHE_URLS = [
-  './',
-  './index.html',
-  './manifest.json',
-]
+// We'll construct these dynamically in the install event
 
 /**
  * INSTALL EVENT
@@ -31,7 +38,15 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('[SW] Pre-caching app shell')
-      return cache.addAll(PRECACHE_URLS)
+      const basePath = getBasePath()
+      const baseUrl = self.location.origin + basePath
+      const precacheUrls = [
+        baseUrl,
+        baseUrl + 'index.html',
+        baseUrl + 'manifest.json',
+      ]
+      console.log('[SW] Pre-caching URLs:', precacheUrls)
+      return cache.addAll(precacheUrls)
     })
   )
 
@@ -122,28 +137,61 @@ async function networkFirst(request) {
     if (request.mode === 'navigate' && networkResponse.status === 404) {
       console.log('[SW] 404 for navigation request, falling back to index.html:', request.url)
       const requestUrl = new URL(request.url)
-      // Construct index.html path: get base path from request and append index.html
-      // e.g., /vue-tv-shows-app/search -> /vue-tv-shows-app/index.html
-      const pathParts = requestUrl.pathname.split('/').filter(Boolean)
-      const basePath = pathParts.length > 0 ? '/' + pathParts[0] + '/' : '/'
-      const indexPath = new URL('index.html', requestUrl.origin + basePath)
+      const basePath = getBasePath()
+      const baseUrl = requestUrl.origin + basePath
+      const indexPath = baseUrl + 'index.html'
       
-      // Try cache first
-      const indexResponse = await caches.match(indexPath)
-      if (indexResponse) {
-        return indexResponse
-      }
-      // If index.html not in cache, try fetching it
-      try {
-        const fetchedIndex = await fetch(indexPath)
-        if (fetchedIndex.ok) {
-          const cache = await caches.open(CACHE_NAME)
-          cache.put(indexPath, fetchedIndex.clone())
-          return fetchedIndex
+      // Try multiple approaches to find index.html
+      const indexUrls = [
+        indexPath,
+        baseUrl + './index.html',
+        new URL('./index.html', baseUrl).toString(),
+        new URL('index.html', baseUrl).toString(),
+      ]
+      
+      // Try cache first with all possible URLs
+      for (const url of indexUrls) {
+        try {
+          const indexResponse = await caches.match(url)
+          if (indexResponse) {
+            console.log('[SW] Found index.html in cache:', url)
+            return indexResponse
+          }
+        } catch (err) {
+          console.log('[SW] Cache match error for:', url, err)
         }
-      } catch {
-        // Fall through to return 404
       }
+      
+      // If index.html not in cache, try fetching it
+      for (const url of indexUrls) {
+        try {
+          const fetchedIndex = await fetch(url, { cache: 'no-cache' })
+          if (fetchedIndex.ok) {
+            console.log('[SW] Fetched index.html from network:', url)
+            const cache = await caches.open(CACHE_NAME)
+            // Cache with the primary URL
+            await cache.put(indexPath, fetchedIndex.clone())
+            return fetchedIndex
+          }
+        } catch (err) {
+          console.log('[SW] Failed to fetch:', url, err)
+        }
+      }
+      
+      // Last resort: try to get index.html from the root
+      try {
+        const rootIndex = await fetch(requestUrl.origin + basePath + 'index.html', { cache: 'no-cache' })
+        if (rootIndex.ok) {
+          console.log('[SW] Fetched index.html from root as last resort')
+          const cache = await caches.open(CACHE_NAME)
+          await cache.put(indexPath, rootIndex.clone())
+          return rootIndex
+        }
+      } catch (err) {
+        console.log('[SW] Last resort fetch failed:', err)
+      }
+      
+      console.warn('[SW] Could not find index.html, returning 404')
     }
 
     // If successful, cache it for offline use
@@ -165,9 +213,17 @@ async function networkFirst(request) {
     // If it's a navigation request and we have index.html cached, return that
     // This enables client-side routing to work offline
     if (request.mode === 'navigate') {
-      const indexResponse = await caches.match('./index.html')
+      const basePath = getBasePath()
+      const requestUrl = new URL(request.url)
+      const indexPath = new URL(basePath + 'index.html', requestUrl.origin)
+      const indexResponse = await caches.match(indexPath)
       if (indexResponse) {
         return indexResponse
+      }
+      // Also try relative path
+      const relativeIndex = await caches.match('./index.html')
+      if (relativeIndex) {
+        return relativeIndex
       }
     }
 
