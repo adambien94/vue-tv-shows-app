@@ -38,13 +38,22 @@ watch(
 )
 
 const focus = () => {
-  searchInput.value?.focus()
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      if (searchInput.value) {
+        setTimeout(() => {
+          searchInput.value?.focus()
+        }, 50)
+      }
+    }, 150)
+  })
 }
 
 onMounted(async () => {
   await nextTick()
-  searchInput.value?.focus()
+  focus()
 })
+
 
 onUnmounted(() => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
