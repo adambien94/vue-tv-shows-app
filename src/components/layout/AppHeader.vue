@@ -1,7 +1,7 @@
 <template>
   <header class="bg-primary backdrop-blur-sm border-b border-b-white/5 sticky top-0 z-[2] w-full">
     <nav class="container px-4 lg:px-12 py-3 lg:py-4 flex justify-between items-center gap-4 w-full">
-      <RouterLink to="/" class="text-text-primary text-3xl lg:text-4xl font-black shrink-0"
+      <RouterLink to="/" class="text-text-primary text-2xl lg:text-4xl font-black shrink-0"
         :class="isSearchPage ? 'hidden lg:block' : ''">
         <span class="text-accent-primary inline-block rotate-12">TV</span>Shows
       </RouterLink>
@@ -29,10 +29,10 @@
           <span class="hidden lg:inline whitespace-nowrap pr-4">Search in tv shows...</span>
         </RouterLink>
 
-        <div class="w-12 h-12 bg-white/10 rounded-full overflow-hidden shrink-0"
+        <!-- <div class="w-12 h-12 bg-white/10 rounded-full overflow-hidden shrink-0"
           :class="isSearchPage ? 'hidden lg:block' : ''">
           <img src="../../assets/image/TV-show-profile.png" alt="TV Shows" class="object-cover" />
-        </div>
+        </div> -->
       </div>
     </nav>
   </header>
