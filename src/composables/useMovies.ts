@@ -98,10 +98,10 @@ export function useMovies() {
     if (!query.trim()) return []
 
     const q = query.toLowerCase()
-    const results = await db.shows
-      .filter((show) => show.name.toLowerCase().includes(q))
-      .limit(50)
-      .toArray()
+    const allCachedShows = await db.shows.toArray()
+    const results = allCachedShows.filter((show) =>
+      show.name.toLowerCase().includes(q)
+    )
 
     searchResults.value = results
     return results
