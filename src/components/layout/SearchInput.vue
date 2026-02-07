@@ -47,9 +47,7 @@ onUnmounted(() => {
 })
 
 const focusInput = () => {
-  setTimeout(() => {
-    searchInput.value?.focus()
-  }, 50)
+  searchInput.value?.focus()
 }
 
 defineExpose({ focusInput })

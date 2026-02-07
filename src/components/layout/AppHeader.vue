@@ -17,8 +17,7 @@
         </button>
 
         <SearchInput v-if="isSearchPage" :model-value="modelValue" :autofocus="autofocus" :placeholder="placeholder"
-          ref="searchInputRef" @update:model-value="$emit('update:modelValue', $event)"
-          class="flex-1 lg:flex-none lg:w-96" />
+          @update:model-value="$emit('update:modelValue', $event)" class="flex-1 lg:flex-none lg:w-96" />
 
         <RouterLink v-if="!isSearchPage" to="/search"
           class="h-12 bg-white/5 rounded-lg flex items-center justify-center gap-3 text-text-tertiary hover:text-text-primary hover:bg-white/10 transition-colors shrink-0 w-12 lg:w-auto lg:px-4">
@@ -40,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SearchInput from '@/components/layout/SearchInput.vue'
 
@@ -56,17 +55,8 @@ defineEmits<{
 
 const router = useRouter()
 const route = useRoute()
-const searchInputRef = ref<InstanceType<typeof SearchInput> | null>(null)
 
 const isSearchPage = computed(() => route.name === 'search')
-
-watch(isSearchPage, async (newVal) => {
-  if (newVal) {
-    await nextTick()
-    searchInputRef.value?.focusInput()
-  }
-}, { immediate: true })
-
 
 const goBack = () => {
   router.back()
