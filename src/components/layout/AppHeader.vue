@@ -1,6 +1,6 @@
 <template>
   <header class="bg-primary backdrop-blur-sm border-b border-b-white/5 sticky top-0 z-[2] w-full">
-    <nav class="container px-4 lg:px-12 py-3 lg:py-4 flex justify-between items-center gap-4 w-full">
+    <nav class="container px-4 lg:px-12 py-2 lg:py-4 flex justify-between items-center gap-4 w-full">
       <RouterLink to="/" class="text-text-primary text-3xl lg:text-4xl font-black shrink-0"
         :class="isSearchPage ? 'hidden lg:block' : ''">
         <span class="text-accent-primary inline-block rotate-12">TV</span>Shows
