@@ -10,7 +10,7 @@
  * WITH THIS: App loads from cache, uses IndexedDB data
  */
 
-const CACHE_NAME = 'tv-shows-v2'
+const CACHE_NAME = 'tv-shows-v3'
 
 /**
  * Get the base path from the service worker's location
@@ -124,71 +124,91 @@ async function handleFetch(request) {
 }
 
 /**
+ * Check if a URL looks like a client-side route (not a static file)
+ */
+function isClientSideRoute(url) {
+  const pathname = url.pathname
+  // If it has a file extension (like .html, .js, .css, .png, etc.), it's a static file
+  // Otherwise, it's likely a client-side route
+  const hasFileExtension = /\.\w+$/.test(pathname.split('?')[0])
+  return !hasFileExtension
+}
+
+/**
+ * Get the index.html URL for a given request
+ */
+function getIndexHtmlUrl(request) {
+  const requestUrl = new URL(request.url)
+  const basePath = getBasePath()
+  const baseUrl = requestUrl.origin + basePath
+  return baseUrl + 'index.html'
+}
+
+/**
  * Network-First Strategy
  * Try network, fall back to cache if offline
  * Best for HTML pages that might be updated frequently
  */
 async function networkFirst(request) {
+  const requestUrl = new URL(request.url)
+  
+  // For navigation requests to client-side routes, serve index.html directly
+  // This prevents 404s on static hosts like GitHub Pages
+  if (request.mode === 'navigate' && isClientSideRoute(requestUrl)) {
+    console.log('[SW] Client-side route detected, serving index.html:', request.url)
+    const indexPath = getIndexHtmlUrl(request)
+    
+    // Try cache first
+    const cachedIndex = await caches.match(indexPath)
+    if (cachedIndex) {
+      console.log('[SW] Serving index.html from cache')
+      return cachedIndex
+    }
+    
+    // If not in cache, fetch it
+    try {
+      const fetchedIndex = await fetch(indexPath, { cache: 'no-cache' })
+      if (fetchedIndex.ok) {
+        console.log('[SW] Fetched index.html from network')
+        const cache = await caches.open(CACHE_NAME)
+        await cache.put(indexPath, fetchedIndex.clone())
+        return fetchedIndex
+      }
+    } catch (err) {
+      console.log('[SW] Failed to fetch index.html:', err)
+    }
+    
+    // If fetch failed, try the original request (fallback)
+    console.log('[SW] Falling back to original request')
+  }
+  
   try {
     const networkResponse = await fetch(request)
 
     // For navigation requests that return 404, fall back to index.html
-    // This enables client-side routing to work on static hosts like GitHub Pages
+    // This handles cases where the route check above didn't catch it
     if (request.mode === 'navigate' && networkResponse.status === 404) {
       console.log('[SW] 404 for navigation request, falling back to index.html:', request.url)
-      const requestUrl = new URL(request.url)
-      const basePath = getBasePath()
-      const baseUrl = requestUrl.origin + basePath
-      const indexPath = baseUrl + 'index.html'
+      const indexPath = getIndexHtmlUrl(request)
       
-      // Try multiple approaches to find index.html
-      const indexUrls = [
-        indexPath,
-        baseUrl + './index.html',
-        new URL('./index.html', baseUrl).toString(),
-        new URL('index.html', baseUrl).toString(),
-      ]
-      
-      // Try cache first with all possible URLs
-      for (const url of indexUrls) {
-        try {
-          const indexResponse = await caches.match(url)
-          if (indexResponse) {
-            console.log('[SW] Found index.html in cache:', url)
-            return indexResponse
-          }
-        } catch (err) {
-          console.log('[SW] Cache match error for:', url, err)
-        }
+      // Try cache first
+      const cachedIndex = await caches.match(indexPath)
+      if (cachedIndex) {
+        console.log('[SW] Serving index.html from cache (404 fallback)')
+        return cachedIndex
       }
       
-      // If index.html not in cache, try fetching it
-      for (const url of indexUrls) {
-        try {
-          const fetchedIndex = await fetch(url, { cache: 'no-cache' })
-          if (fetchedIndex.ok) {
-            console.log('[SW] Fetched index.html from network:', url)
-            const cache = await caches.open(CACHE_NAME)
-            // Cache with the primary URL
-            await cache.put(indexPath, fetchedIndex.clone())
-            return fetchedIndex
-          }
-        } catch (err) {
-          console.log('[SW] Failed to fetch:', url, err)
-        }
-      }
-      
-      // Last resort: try to get index.html from the root
+      // If not in cache, fetch it
       try {
-        const rootIndex = await fetch(requestUrl.origin + basePath + 'index.html', { cache: 'no-cache' })
-        if (rootIndex.ok) {
-          console.log('[SW] Fetched index.html from root as last resort')
+        const fetchedIndex = await fetch(indexPath, { cache: 'no-cache' })
+        if (fetchedIndex.ok) {
+          console.log('[SW] Fetched index.html from network (404 fallback)')
           const cache = await caches.open(CACHE_NAME)
-          await cache.put(indexPath, rootIndex.clone())
-          return rootIndex
+          await cache.put(indexPath, fetchedIndex.clone())
+          return fetchedIndex
         }
       } catch (err) {
-        console.log('[SW] Last resort fetch failed:', err)
+        console.log('[SW] Failed to fetch index.html (404 fallback):', err)
       }
       
       console.warn('[SW] Could not find index.html, returning 404')
@@ -213,17 +233,11 @@ async function networkFirst(request) {
     // If it's a navigation request and we have index.html cached, return that
     // This enables client-side routing to work offline
     if (request.mode === 'navigate') {
-      const basePath = getBasePath()
-      const requestUrl = new URL(request.url)
-      const indexPath = new URL(basePath + 'index.html', requestUrl.origin)
+      const indexPath = getIndexHtmlUrl(request)
       const indexResponse = await caches.match(indexPath)
       if (indexResponse) {
+        console.log('[SW] Serving index.html from cache (offline fallback)')
         return indexResponse
-      }
-      // Also try relative path
-      const relativeIndex = await caches.match('./index.html')
-      if (relativeIndex) {
-        return relativeIndex
       }
     }
 
