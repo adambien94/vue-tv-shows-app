@@ -117,6 +117,35 @@ async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request)
 
+    // For navigation requests that return 404, fall back to index.html
+    // This enables client-side routing to work on static hosts like GitHub Pages
+    if (request.mode === 'navigate' && networkResponse.status === 404) {
+      console.log('[SW] 404 for navigation request, falling back to index.html:', request.url)
+      const requestUrl = new URL(request.url)
+      // Construct index.html path: get base path from request and append index.html
+      // e.g., /vue-tv-shows-app/search -> /vue-tv-shows-app/index.html
+      const pathParts = requestUrl.pathname.split('/').filter(Boolean)
+      const basePath = pathParts.length > 0 ? '/' + pathParts[0] + '/' : '/'
+      const indexPath = new URL('index.html', requestUrl.origin + basePath)
+      
+      // Try cache first
+      const indexResponse = await caches.match(indexPath)
+      if (indexResponse) {
+        return indexResponse
+      }
+      // If index.html not in cache, try fetching it
+      try {
+        const fetchedIndex = await fetch(indexPath)
+        if (fetchedIndex.ok) {
+          const cache = await caches.open(CACHE_NAME)
+          cache.put(indexPath, fetchedIndex.clone())
+          return fetchedIndex
+        }
+      } catch {
+        // Fall through to return 404
+      }
+    }
+
     // If successful, cache it for offline use
     if (networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME)

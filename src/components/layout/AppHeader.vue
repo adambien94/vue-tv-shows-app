@@ -19,7 +19,7 @@
         <SearchInput v-if="isSearchPage" :model-value="modelValue" :autofocus="autofocus" :placeholder="placeholder"
           @update:model-value="$emit('update:modelValue', $event)" class="flex-1 lg:flex-none lg:w-96" />
 
-        <button v-if="!isSearchPage" @click="goToSearch"
+        <RouterLink v-if="!isSearchPage" to="/search"
           class="h-12 bg-white/5 rounded-lg flex items-center justify-center gap-3 text-text-tertiary hover:text-text-primary hover:bg-white/10 transition-colors shrink-0 w-12 lg:w-auto lg:px-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -27,7 +27,7 @@
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
           <span class="hidden lg:inline whitespace-nowrap pr-4">Search in tv shows...</span>
-        </button>
+        </RouterLink>
 
         <div class="w-12 h-12 bg-white/10 rounded-full overflow-hidden shrink-0"
           :class="isSearchPage ? 'hidden lg:block' : ''">
@@ -62,10 +62,6 @@ const goHome = (e: MouseEvent) => {
   if (route.name === 'home') return
   e.preventDefault()
   router.push('/')
-}
-
-const goToSearch = () => {
-  router.push({ name: 'search' })
 }
 
 const goBack = () => {
