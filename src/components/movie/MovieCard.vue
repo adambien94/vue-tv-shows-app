@@ -24,7 +24,8 @@
         {{ name }}
       </span>
       <span class="flex items-center gap-2">
-        <span class="text-text-secondary text-xs lg:text-sm">Rating: <span class="font-semibold">{{ rating?.toFixed(1)
+        <span class="text-text-secondary text-xs lg:text-sm mt-1">Rating: <span class="font-semibold">{{
+          rating?.toFixed(1)
           || '-'
             }}</span> </span>
       </span>

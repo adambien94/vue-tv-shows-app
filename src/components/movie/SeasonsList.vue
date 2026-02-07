@@ -4,7 +4,8 @@
       <h2 v-if="loading" class="text-text-primary">
         <span class="inline-block w-24 h-6 bg-secondary/60 rounded animate-pulse" />
       </h2>
-      <h2 v-else class="text-text-primary">{{ seasons.length }} {{ seasons.length === 1 ? 'Season' : 'Seasons' }}</h2>
+      <h2 v-else class="text-text-primary text-xl lg:text-2xl mb-1 lg:mb-0">{{ seasons.length }} {{ seasons.length === 1
+        ? 'Season' : 'Seasons' }}</h2>
     </template>
 
     <template #items>

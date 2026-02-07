@@ -2,15 +2,15 @@
   <div class="homepage-container pb-4">
     <AppHeader />
 
-    <main class="pt-2 lg:pt-4 container">
+    <main class="pt-3 lg:pt-4 container">
       <h1 class="sr-only">Browse TV Shows by Genre</h1>
 
       <section class="mt-1 sm:mt-4" v-for="genre in genres" :key="genre" :aria-labelledby="`genre-${genre}`">
         <HorizontalList>
           <template #header>
-            <h2>
+            <h2 class="text-xl lg:text-2xl mb-1 lg:mb-0">
               <RouterLink :to="{ name: 'search', query: { genre } }"
-                class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
+                class="flex  gap-4 hover:text-text-primary transition-colors cursor-pointer">
                 {{ genre }}
                 <span class="text-accent-primary">&#10095;</span>
               </RouterLink>

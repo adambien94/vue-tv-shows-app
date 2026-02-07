@@ -2,11 +2,11 @@
   <div class="pb-12">
     <AppHeader v-model="searchTerm" :autofocus="true" :placeholder="searchPlaceholder" />
 
-    <main class="container min-h-[50vh] pt-3 sm:pt-6 lg:pt-8 lg:px-8">
+    <main class="container min-h-[50vh] pt-4 sm:pt-6 lg:pt-8 lg:px-8">
       <div class="flex justify-between items-center mb-2 sm:mb-4 px-4 ">
-        <h1 class="flex gap-4 text-text-secondary text-lg lg:text-2xl font-bold">
+        <h2 class="flex gap-4 text-text-secondary text-xl lg:text-2xl mb-1 lg:mb-0 font-bold">
           {{ pageTitle }}:
-        </h1>
+        </h2>
 
         <p class="text-text-tertiary text-sm" aria-live="polite">
           <template v-if="searchLoading">Searching...</template>
@@ -80,7 +80,7 @@ const updateUrl = () => {
 
 const filterGenreShows = (term: string) => {
   if (!term.trim()) {
-    searchResults.value = genreShows.value
+    searchResults.value = genreShows.value.slice(0, 36)
     return
   }
   const q = term.toLowerCase()
@@ -102,8 +102,7 @@ watch(searchTerm, (newTerm) => {
     } else if (newTerm.trim()) {
       searchMoviesApi(newTerm)
     } else {
-      // Show limited movies when search is cleared
-      searchResults.value = movies.value.slice(0, 24)
+      searchResults.value = movies.value.slice(0, 36)
     }
   }, 300)
 })
@@ -115,6 +114,7 @@ watch(
       selectedGenre.value = newGenre as string
       const shows = await fetchMoviesByGenre(selectedGenre.value)
       genreShows.value = shows
+      searchResults.value = shows.slice(0, 36)
     }
   }
 )
@@ -123,11 +123,12 @@ onMounted(async () => {
   if (selectedGenre.value) {
     const shows = await fetchMoviesByGenre(selectedGenre.value)
     genreShows.value = shows
+    searchResults.value = shows.slice(0, 36)
   } else if (searchTerm.value) {
     searchMoviesApi(searchTerm.value)
   } else {
     await fetchMovies()
-    searchResults.value = movies.value.slice(0, 24)
+    searchResults.value = movies.value.slice(0, 36)
   }
 })
 </script>

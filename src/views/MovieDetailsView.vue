@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                  }}</span>
+                }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -89,7 +89,7 @@
           <template #header>
             <RouterLink :to="{ name: 'search', query: { genre: activeGenre } }"
               class="flex gap-4 hover:text-text-primary transition-colors cursor-pointer">
-              <h2>Other in {{ activeGenre }}</h2>
+              <h2 class="text-xl lg:text-2xl mb-1 lg:mb-0">Other in {{ activeGenre }}</h2>
               <span class="text-accent-primary" aria-hidden="true">&#10095;</span>
             </RouterLink>
           </template>
