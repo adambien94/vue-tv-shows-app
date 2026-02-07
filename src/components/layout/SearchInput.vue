@@ -1,9 +1,8 @@
 <template>
   <div class="flex-1 lg:mt-0 bg-white/5 rounded-lg relative">
-    <input ref="searchInput" type="text"
+    <input ref="searchInput" type="text" autofocus
       class="w-full h-12 rounded-lg px-4 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
-      :placeholder="placeholder || 'Search...'" :value="localValue" @input="onInput" @focus="onFocus"
-      @keydown.escape="onClear" />
+      :placeholder="placeholder || 'Search...'" :value="localValue" @input="onInput" @keydown.escape="onClear" />
     <button v-if="localValue" @click="onClear" type="button"
       class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -16,17 +15,15 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 
 const props = defineProps<{
   modelValue?: string
-  autofocus?: boolean
   placeholder?: string
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void
-  (e: 'focus'): void
 }>()
 
 const searchInput = ref<HTMLInputElement | null>(null)
@@ -40,33 +37,18 @@ watch(
   },
 )
 
-onUnmounted(() => {
-  if (debounceTimeout) clearTimeout(debounceTimeout)
-})
-
-const focusInput = async () => {
-  await nextTick()
+const focus = () => {
   searchInput.value?.focus()
 }
 
-onMounted(() => {
-  if (props.autofocus) {
-    focusInput()
-  }
+onMounted(async () => {
+  await nextTick()
+  searchInput.value?.focus()
 })
 
-watch(
-  () => props.autofocus,
-  (val) => {
-    if (val) {
-      focusInput()
-    }
-  },
-)
-
-const onFocus = () => {
-  emit('focus')
-}
+onUnmounted(() => {
+  if (debounceTimeout) clearTimeout(debounceTimeout)
+})
 
 const onInput = (event: Event) => {
   const target = event.target as HTMLInputElement
@@ -82,6 +64,6 @@ const onClear = () => {
   if (debounceTimeout) clearTimeout(debounceTimeout)
   localValue.value = ''
   emit('update:modelValue', '')
-  focusInput()
+  searchInput.value?.focus()
 }
 </script>

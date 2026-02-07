@@ -1,6 +1,6 @@
 <template>
   <div class="pb-12">
-    <AppHeader v-model="searchTerm" :autofocus="true" :placeholder="searchPlaceholder" />
+    <AppHeader v-model="searchTerm" :placeholder="searchPlaceholder" />
 
     <main class="container min-h-[50vh] pt-4 sm:pt-6 lg:pt-8 lg:px-8">
       <div class="flex justify-between items-center mb-2 sm:mb-4 px-4 ">
