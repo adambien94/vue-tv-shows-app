@@ -50,8 +50,15 @@ const genres = computed(() => Object.keys(moviesByGenre.value))
 </script>
 
 <style scoped>
-.homepage-container {
-  background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 90%);
+.homepage-container::before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(ellipse at top, #1a1a2e 0%, #0a0a0a 80%);
   background-attachment: fixed;
 }
 </style>
