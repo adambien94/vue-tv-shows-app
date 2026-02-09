@@ -61,6 +61,5 @@ const genres = computed(() => Object.keys(moviesByGenre.value))
   background: linear-gradient(#6366f120, #0a0a0a);
   z-index: -1;
   mask-size: 400px 400px;
-  mask-repeat: repeat;
 }
 </style>
