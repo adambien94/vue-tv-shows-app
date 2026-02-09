@@ -23,7 +23,7 @@
       <span class="text-text-primary font-bold text-sm lg:text-lg line-clamp-1">
         {{ name }}
       </span>
-      <span class="flex items-center gap-2">
+      <span class="flex items-center gap-2 mt-1 sm:mt-0">
         <span class="text-text-secondary text-xs lg:text-sm">Rating: <span class="font-semibold">{{
           rating?.toFixed(1)
           || '-'
