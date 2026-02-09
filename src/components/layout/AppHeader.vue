@@ -20,13 +20,13 @@
           @update:model-value="$emit('update:modelValue', $event)" class="flex-1 lg:flex-none lg:w-96" />
 
         <RouterLink v-if="!isSearchPage" to="/search"
-          class="h-12 bg-white/5 rounded-lg flex items-center justify-center gap-3 text-text-tertiary hover:text-text-primary hover:bg-white/10 transition-colors shrink-0 w-12 lg:w-auto lg:px-4">
+          class="h-12 bg-white/5 rounded-lg flex items-center justify-center lg:justify-start gap-3 text-text-tertiary hover:text-text-primary hover:bg-white/10 transition-colors shrink-0 w-12 lg:w-96 lg:px-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <span class="hidden lg:inline whitespace-nowrap pr-4">Search in tv shows...</span>
+          <span class="hidden lg:inline whitespace-nowrap pr-4">Search...</span>
         </RouterLink>
 
         <!-- <div class="w-12 h-12 bg-white/10 rounded-full overflow-hidden shrink-0"

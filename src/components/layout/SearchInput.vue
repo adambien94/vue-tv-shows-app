@@ -1,7 +1,14 @@
 <template>
   <div class="flex-1 lg:mt-0 bg-white/5 rounded-lg relative">
+    <svg xmlns="http://www.w3.org/2000/svg"
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-tertiary pointer-events-none"
+      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
     <input ref="searchInput" type="text" autofocus
-      class="w-full h-12 rounded-lg px-4 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
+      class="w-full h-12 rounded-lg pl-12 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
       :placeholder="placeholder || 'Search...'" :value="localValue" @input="onInput" @keydown.escape="onClear" />
     <button v-if="localValue" @click="onClear" type="button"
       class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors">
