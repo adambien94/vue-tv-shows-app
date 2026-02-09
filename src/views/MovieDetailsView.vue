@@ -54,7 +54,7 @@
                 class="px-3 py-1 rounded-full bg-accent-primary/15 text-accent-primary border border-accent-primary/30">
                 <span class="font-semibold">{{
                   movie.rating?.average != null ? movie.rating.average.toFixed(1) : '—'
-                }}</span>
+                  }}</span>
                 <span class="text-sm text-accent-primary/90"> / 10</span>
               </div>
             </div>
@@ -82,7 +82,7 @@
         <p class="text-text-secondary mt-2">Try going back and selecting a movie again.</p>
       </div>
 
-      <aside v-if="movie" class="space-y-8" aria-label="Related content">
+      <aside v-if="movie" class="space-y-8 sm:space-y-0 sm:pt-2" aria-label="Related content">
         <SeasonsList :seasons="seasons" :loading="seasonsLoading" />
 
         <HorizontalList v-if="activeGenre && moviesInGenre.length > 0">
