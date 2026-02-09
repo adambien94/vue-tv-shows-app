@@ -151,20 +151,20 @@ function getIndexHtmlUrl(request) {
  */
 async function networkFirst(request) {
   const requestUrl = new URL(request.url)
-
+  
   // For navigation requests to client-side routes, serve index.html directly
   // This prevents 404s on static hosts like GitHub Pages
   if (request.mode === 'navigate' && isClientSideRoute(requestUrl)) {
     console.log('[SW] Client-side route detected, serving index.html:', request.url)
     const indexPath = getIndexHtmlUrl(request)
-
+    
     // Try cache first
     const cachedIndex = await caches.match(indexPath)
     if (cachedIndex) {
       console.log('[SW] Serving index.html from cache')
       return cachedIndex
     }
-
+    
     // If not in cache, fetch it
     try {
       const fetchedIndex = await fetch(indexPath, { cache: 'no-cache' })
@@ -177,11 +177,11 @@ async function networkFirst(request) {
     } catch (err) {
       console.log('[SW] Failed to fetch index.html:', err)
     }
-
+    
     // If fetch failed, try the original request (fallback)
     console.log('[SW] Falling back to original request')
   }
-
+  
   try {
     const networkResponse = await fetch(request)
 
@@ -190,14 +190,14 @@ async function networkFirst(request) {
     if (request.mode === 'navigate' && networkResponse.status === 404) {
       console.log('[SW] 404 for navigation request, falling back to index.html:', request.url)
       const indexPath = getIndexHtmlUrl(request)
-
+      
       // Try cache first
       const cachedIndex = await caches.match(indexPath)
       if (cachedIndex) {
         console.log('[SW] Serving index.html from cache (404 fallback)')
         return cachedIndex
       }
-
+      
       // If not in cache, fetch it
       try {
         const fetchedIndex = await fetch(indexPath, { cache: 'no-cache' })
@@ -210,7 +210,7 @@ async function networkFirst(request) {
       } catch (err) {
         console.log('[SW] Failed to fetch index.html (404 fallback):', err)
       }
-
+      
       console.warn('[SW] Could not find index.html, returning 404')
     }
 
