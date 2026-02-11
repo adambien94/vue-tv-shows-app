@@ -251,7 +251,7 @@ const moviesInGenre = computed(() => {
     left: 0;
     height: 100%;
     width: 100%;
-    background: linear-gradient(#0a0a0a 20%, #6366f120 100%);
+    background: linear-gradient(#0a0a0a 20%, #232323 100%);
     z-index: -5;
     mask-size: 400px 400px;
     mask-repeat: repeat;

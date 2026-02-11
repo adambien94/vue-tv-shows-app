@@ -7,7 +7,7 @@
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
     </svg>
-    <input ref="searchInput" type="text" autofocus
+    <input ref="searchInput" type="text"
       class="w-full h-12 rounded-lg pl-12 pr-10 lg:w-96 bg-transparent outline-none border-none text-text-tertiary placeholder:text-text-tertiary foucs:outline focus:outline-accent-primary"
       :placeholder="placeholder || 'Search...'" :value="localValue" @input="onInput" @keydown.escape="onClear" />
     <button v-if="localValue" @click="onClear" type="button"

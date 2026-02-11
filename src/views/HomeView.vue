@@ -53,13 +53,12 @@ const genres = computed(() => Object.keys(moviesByGenre.value))
 .homepage-container::before {
   content: '';
   display: block;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   height: 60vh;
   width: 100%;
-  background: linear-gradient(#6366f120, #0a0a0a);
+  background: linear-gradient(#232323, #0a0a0a);
   z-index: -1;
-  mask-size: 400px 400px;
 }
 </style>
